@@ -76,6 +76,7 @@ header nav .nav-record {
 	padding: 6px 14px;
 	border-radius: 999px;
 	font-size: 0.75rem;
+	white-space: nowrap;      /* 追加：折り返し防止 */
 }
 
 header nav .nav-record:hover {
@@ -104,17 +105,17 @@ header .nav-logout-form button[type="submit"] {
 	width: auto;
 	margin: 0;
 	padding: 6px 14px;
-	background-color: transparent;
+	background-color: rgba(255, 255, 255, 0.15);   /* 変更：背景を少し明るく */
 	color: #ffffff;
-	border: 1px solid rgba(255, 255, 255, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.85);   /* 変更：ボーダーを濃く */
 	font-size: 0.85rem;
-	font-weight: normal;
-	white-space: nowrap;
+	font-weight: bold;                              /* 追加：太字にして視認性UP */
+	white-space: nowrap;                            /* 追加：念のため折り返し防止 */
 	flex-shrink: 0;
 }
 
 header .nav-logout-form button[type="submit"]:hover {
-	background-color: rgba(255, 255, 255, 0.15);
+	background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* ===== 固定フッター（コピーライト） ===== */
@@ -233,7 +234,7 @@ button[type="submit"]:hover {
 /* ログアウトボタンなど控えめにしたい場合 */
 form[action$="/logout"] button[type="submit"] {
 	background-color: transparent;
-	color: var(--color-text-light);
+	color: #ffffff;
 	border: 1px solid #d5e8dc;
 }
 
