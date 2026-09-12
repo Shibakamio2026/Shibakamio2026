@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
-    <title>ホーム - 学生向け家計簿</title>
+    <title>ホーム - 学生ログ</title>
 </head>
 <body>
+	<div th:replace="~{fragments/header :: header}"></div>
     <h1>ホーム</h1>
     <p>ログイン中: <span th:text="${email}"></span></p>
 
     <p><a th:href="@{/transactions/input}">収支入力へ</a></p>
-
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">ログアウト</button>
-    </form>
 </body>
 </html>

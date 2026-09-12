@@ -3,173 +3,177 @@
    ========================== */
 
 :root {
-    --color-primary: #4caf7d;
-    --color-primary-dark: #3d9468;
-    --color-accent: #ffa94d;
-    --color-bg-start: #e8f8ef;
-    --color-bg-end: #c9ecd9;
-    --color-text: #33443c;
-    --color-text-light: #6b7d73;
-    --color-card-bg: #ffffff;
-    --color-error: #e05c5c;
-    --radius: 16px;
-    --header-height: 60px;
-    --footer-height: 48px;
+	--color-primary: #4caf7d;
+	--color-primary-dark: #3d9468;
+	--color-accent: #ffa94d;
+	--color-bg-start: #e8f8ef;
+	--color-bg-end: #c9ecd9;
+	--color-text: #33443c;
+	--color-text-light: #6b7d73;
+	--color-card-bg: #ffffff;
+	--color-error: #e05c5c;
+	--radius: 16px;
+	--header-height: 60px;
+	--footer-height: 48px;
 }
 
 * {
-    box-sizing: border-box;
+	box-sizing: border-box;
 }
 
-html, body {
-    margin: 0;
-    min-height: 100vh;
+html,
+body {
+	margin: 0;
+	min-height: 100vh;
 }
 
 body {
-    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-    color: var(--color-text);
-    background: linear-gradient(180deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+	font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+	color: var(--color-text);
+	background: linear-gradient(180deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
 
-    min-height: 100vh;
-    padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
+	min-height: 100vh;
+	padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
 /* ===== 固定ヘッダー（fragments/header.html の <header> タグに適用） ===== */
 header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--header-height);
-    background-color: var(--color-primary-dark);
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    z-index: 10;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: var(--header-height);
+	background-color: var(--color-primary-dark);
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 24px;
+	z-index: 10;
 }
 
 header .app-logo {
-    font-size: 1.1rem;
-    font-weight: bold;
-    letter-spacing: 0.05em;
+	font-size: 1.1rem;
+	font-weight: bold;
+	letter-spacing: 0.05em;
 }
 
 header nav {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
 }
 
 header nav .nav-record {
-    background-color: #ffffff;
-    color: var(--color-primary-dark);
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 0.85rem;
+	background-color: #ffffff;
+	color: var(--color-primary-dark);
+	padding: 6px 14px;
+	border-radius: 999px;
+	font-size: 0.75rem;
 }
 
 header nav .nav-record:hover {
-    background-color: #eafcf1;
-    text-decoration: none;
+	background-color: #eafcf1;
+	text-decoration: none;
 }
 
 header nav .nav-user {
-    color: #ffffff;
-    font-size: 0.9rem;
-    font-weight: bold;
+	color: #ffffff;
+	font-size: 0.9rem;
+	font-weight: bold;
 }
 
 header .nav-logout-form {
-    display: inline;
-    margin: 0;
-    padding: 0;
-    background: none;
-    box-shadow: none;
-    width: auto;
-    max-width: none;
+	display: inline;
+	margin: 0;
+	padding: 0;
+	background: none;
+	box-shadow: none;
+	width: auto;
+	max-width: none;
+	flex-shrink: 0;
 }
 
 header .nav-logout-form button[type="submit"] {
-    width: auto;
-    margin: 0;
-    padding: 6px 14px;
-    background-color: transparent;
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    font-size: 0.85rem;
-    font-weight: normal;
+	width: auto;
+	margin: 0;
+	padding: 6px 14px;
+	background-color: transparent;
+	color: #ffffff;
+	border: 1px solid rgba(255, 255, 255, 0.6);
+	font-size: 0.85rem;
+	font-weight: normal;
+	white-space: nowrap;
+	flex-shrink: 0;
 }
 
 header .nav-logout-form button[type="submit"]:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+	background-color: rgba(255, 255, 255, 0.15);
 }
 
 /* ===== 固定フッター（コピーライト） ===== */
 body::after {
-    content: "© 2026 学生向け家計簿";
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--footer-height);
-    background-color: var(--color-primary-dark);
-    color: #eafcf1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    z-index: 10;
+	content: "© 2026 家計ログ";
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: var(--footer-height);
+	background-color: var(--color-primary-dark);
+	color: #eafcf1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.8rem;
+	z-index: 10;
 }
 
 h1 {
-    font-size: 1.5rem;
-    color: var(--color-primary-dark);
-    margin: 0;
-    text-align: center;
+	font-size: 1.5rem;
+	color: var(--color-primary-dark);
+	margin: 0;
+	text-align: center;
 }
 
 /* 白いカード（フォーム） */
 .card,
 form {
-    background: var(--color-card-bg);
-    border-radius: var(--radius);
-    box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-    padding: 32px;
-    width: 100%;
-    max-width: 420px;
-    margin: 0;
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 32px;
+	width: 100%;
+	max-width: 420px;
+	margin: 0;
 }
 
 /* h1・エラー表示・カード以外のテキストなど、
    すべての直下要素の横幅をカードと揃える */
-body > * {
-    width: 100%;
-    max-width: 420px;
+body>* :not(header) {
+	width: 100%;
+	max-width: 420px;
 }
 
 table {
-    max-width: 100%;
+	max-width: 100%;
 }
 
 /* フォーム部品 */
 form div {
-    margin-bottom: 18px;
+	margin-bottom: 18px;
 }
 
 label {
-    display: block;
-    font-size: 0.85rem;
-    color: var(--color-text-light);
-    margin-bottom: 6px;
+	display: block;
+	font-size: 0.85rem;
+	color: var(--color-text-light);
+	margin-bottom: 6px;
 }
 
 input[type="text"],
@@ -178,91 +182,91 @@ input[type="password"],
 input[type="number"],
 input[type="date"],
 select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #d5e8dc;
-    border-radius: 10px;
-    font-size: 1rem;
-    background-color: #fafffc;
-    color: var(--color-text);
+	width: 100%;
+	padding: 10px 14px;
+	border: 1px solid #d5e8dc;
+	border-radius: 10px;
+	font-size: 1rem;
+	background-color: #fafffc;
+	color: var(--color-text);
 }
 
 input:focus,
 select:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(76, 175, 125, 0.15);
+	outline: none;
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 3px rgba(76, 175, 125, 0.15);
 }
 
 /* ラジオボタンの並び */
 form div label {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-right: 16px;
-    font-size: 0.95rem;
-    color: var(--color-text);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-right: 16px;
+	font-size: 0.95rem;
+	color: var(--color-text);
 }
 
 input[type="radio"] {
-    accent-color: var(--color-primary);
+	accent-color: var(--color-primary);
 }
 
 /* ボタン */
 button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 999px;
-    background-color: var(--color-primary);
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-    margin-top: 8px;
+	width: 100%;
+	padding: 12px;
+	border: none;
+	border-radius: 999px;
+	background-color: var(--color-primary);
+	color: #ffffff;
+	font-size: 1rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+	margin-top: 8px;
 }
 
 button[type="submit"]:hover {
-    background-color: var(--color-primary-dark);
+	background-color: var(--color-primary-dark);
 }
 
 /* ログアウトボタンなど控えめにしたい場合 */
 form[action$="/logout"] button[type="submit"] {
-    background-color: transparent;
-    color: var(--color-text-light);
-    border: 1px solid #d5e8dc;
+	background-color: transparent;
+	color: var(--color-text-light);
+	border: 1px solid #d5e8dc;
 }
 
 form[action$="/logout"] button[type="submit"]:hover {
-    background-color: #f0f7f2;
-    color: var(--color-text);
+	background-color: #f0f7f2;
+	color: var(--color-text);
 }
 
 /* リンク */
 a {
-    color: var(--color-primary-dark);
-    text-decoration: none;
-    font-weight: bold;
+	color: var(--color-primary-dark);
+	text-decoration: none;
+	font-weight: bold;
 }
 
 a:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 p {
-    text-align: center;
-    margin: 0;
+	text-align: center;
+	margin: 0;
 }
 
 /* エラーメッセージ */
 [style*="color: red"],
 [style*="color:red"] {
-    background-color: #fdeceb !important;
-    color: var(--color-error) !important;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    margin-bottom: 0;
-    display: block;
+	background-color: #fdeceb !important;
+	color: var(--color-error) !important;
+	border-radius: 10px;
+	padding: 10px 14px;
+	font-size: 0.9rem;
+	margin-bottom: 0;
+	display: block;
 }
