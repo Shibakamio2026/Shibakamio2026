@@ -59,23 +59,11 @@ public class Transaction {
 	@Column(name = "amount", nullable = false, precision = 10, scale = 0)
 	private BigDecimal amount;
 
-	@Column(name = "transaction_content")
-	private String transactionContent;
+	@Column(name = "external_transaction_no")
+	private String externalTransactionNo;
 
-	@Column(name = "business_partner")
-	private String businessPartner;
-
-	@Column(name = "transaction_method")
-	private String transactionMethod;
-
-	@Column(name = "payment_type")
-	private String paymentType;
-
-	@Column(name = "user_name")
-	private String userName;
-
-	@Column(name = "transaction_number")
-	private String transactionNumber;
+	@Column(name = "source_content")
+	private String sourceContent;
 
 	@Column(name = "memo")
 	private String memo;

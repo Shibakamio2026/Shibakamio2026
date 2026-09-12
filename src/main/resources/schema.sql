@@ -127,40 +127,24 @@ CREATE TABLE IF NOT EXISTS transactions (
     asset_id BIGINT NOT NULL,
     category_id BIGINT NOT NULL,
     scheduled_transaction_id BIGINT UNIQUE,
-
     transaction_type VARCHAR(10) NOT NULL,
     transaction_date DATE NOT NULL,
-
     amount DECIMAL(10,0) NOT NULL,
-
-    transaction_content VARCHAR,
-    business_partner VARCHAR,
-    transaction_method VARCHAR,
-    payment_type VARCHAR,
-    user_name VARCHAR,
-
-    transaction_number VARCHAR,
-
+    external_transaction_no VARCHAR,
+    source_content VARCHAR,
     memo VARCHAR,
 
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
 
     CONSTRAINT fk_transactions_asset
-        FOREIGN KEY (asset_id)
-        REFERENCES assets(asset_id),
-
+        FOREIGN KEY (asset_id) REFERENCES assets(asset_id),
     CONSTRAINT fk_transactions_category
-        FOREIGN KEY (category_id)
-        REFERENCES categories(category_id),
-
+        FOREIGN KEY (category_id) REFERENCES categories(category_id),
     CONSTRAINT fk_transactions_scheduled
-        FOREIGN KEY (scheduled_transaction_id)
-        REFERENCES scheduled_transactions(scheduled_transaction_id),
-
+        FOREIGN KEY (scheduled_transaction_id) REFERENCES scheduled_transactions(scheduled_transaction_id),
     CONSTRAINT chk_transactions_type
         CHECK (transaction_type IN ('INCOME', 'EXPENSE')),
-
     CONSTRAINT chk_transactions_amount
         CHECK (amount > 0)
 );

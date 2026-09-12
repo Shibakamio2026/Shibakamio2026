@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.AutoTransaction;
 import com.example.demo.entity.ScheduledTransaction;
+import com.example.demo.entity.User;
 import com.example.demo.enums.RecurrenceInterval;
 import com.example.demo.enums.ScheduledStatus;
 import com.example.demo.repository.AutoTransactionRepository;
@@ -78,6 +79,36 @@ public class AutoTransactionService {
 		}
 		default:
 			throw new IllegalArgumentException("未対応の発生間隔です");
+		}
+	}
+
+	// ===== G11 自動収支一覧 =====
+
+	public List<AutoTransaction> findAllForUser(User user) {
+		return autoTransactionRepository.findByAsset_User(user);
+	}
+
+	public AutoTransaction findByIdForUser(Long id, User user) {
+		AutoTransaction auto = autoTransactionRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("自動収支が見つかりません"));
+		if (!auto.getAsset().getUser().getUserId().equals(user.getUserId())) {
+			throw new IllegalStateException("この自動収支にアクセスする権限がありません");
+		}
+		return auto;
+	}
+
+	public void disable(Long id, User user) {
+		AutoTransaction auto = findByIdForUser(id, user);
+		auto.setEnabled(false);
+		autoTransactionRepository.save(auto);
+
+		// 未確定の予定収支（PLANNED）はまとめてキャンセル扱いにする
+		List<ScheduledTransaction> scheduled = scheduledTransactionRepository.findByAutoTransaction(auto);
+		for (ScheduledTransaction st : scheduled) {
+			if (st.getStatus() == ScheduledStatus.PLANNED) {
+				st.setStatus(ScheduledStatus.CANCELED);
+				scheduledTransactionRepository.save(st);
+			}
 		}
 	}
 }
