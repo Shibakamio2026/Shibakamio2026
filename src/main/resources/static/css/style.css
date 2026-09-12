@@ -31,7 +31,6 @@ body {
     color: var(--color-text);
     background: linear-gradient(180deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
 
-    /* ここが今回のバグ修正の本体：縦並びに固定する */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -42,9 +41,8 @@ body {
     padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
-/* ===== Figma参考：固定ヘッダー（アプリ名） ===== */
-body::before {
-    content: "家計ログ";
+/* ===== 固定ヘッダー（fragments/header.html の <header> タグに適用） ===== */
+header {
     position: fixed;
     top: 0;
     left: 0;
@@ -54,15 +52,68 @@ body::before {
     color: #ffffff;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding-left: 50px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    letter-spacing: 0.05em;
+    justify-content: space-between;
+    padding: 0 24px;
     z-index: 10;
 }
 
-/* ===== Figma参考：固定フッター（コピーライト） ===== */
+header .app-logo {
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+header nav .nav-record {
+    background-color: #ffffff;
+    color: var(--color-primary-dark);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+}
+
+header nav .nav-record:hover {
+    background-color: #eafcf1;
+    text-decoration: none;
+}
+
+header nav .nav-user {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+header .nav-logout-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    width: auto;
+    max-width: none;
+}
+
+header .nav-logout-form button[type="submit"] {
+    width: auto;
+    margin: 0;
+    padding: 6px 14px;
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    font-weight: normal;
+}
+
+header .nav-logout-form button[type="submit"]:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== 固定フッター（コピーライト） ===== */
 body::after {
     content: "© 2026 学生向け家計簿";
     position: fixed;
