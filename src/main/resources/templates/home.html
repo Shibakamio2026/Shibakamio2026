@@ -1,16 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
-    <title>ホーム - 学生ログ</title>
+	<title>ホーム - 学生ログ</title>
 </head>
-<body>
-	<div th:replace="~{fragments/header :: header}"></div>
-    <h1>ホーム</h1>
-    <p>ログイン中: <span th:text="${email}"></span></p>
 
-    <p><a th:href="@{/transactions/input}">収支入力へ</a></p>
+<body>
+	<header th:fragment="header">
+		<span class="app-logo">家計ログ</span>
+		<nav sec:authorize="isAuthenticated()">
+			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
+			<span class="nav-user" sec:authentication="name"></span>
+			<form th:action="@{/logout}" method="post" class="nav-logout-form">
+				<button type="submit">ログアウト</button>
+			</form>
+		</nav>
+	</header>
+	<main>
+		<h1>ホーム</h1>
+		<p>ログイン中: <span th:text="${email}"></span></p>
+
+		<p><a th:href="@{/transactions/input}">収支入力へ</a></p>
+	</main>
+	
+	<footer class="site-footer">
+		<p>&copy; 2026 家計ログ</p>
+	</footer>
 </body>
+
 </html>

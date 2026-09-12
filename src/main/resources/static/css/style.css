@@ -118,8 +118,7 @@ header .nav-logout-form button[type="submit"]:hover {
 }
 
 /* ===== 固定フッター（コピーライト） ===== */
-body::after {
-	content: "© 2026 家計ログ";
+.site-footer {
 	position: fixed;
 	bottom: 0;
 	left: 0;

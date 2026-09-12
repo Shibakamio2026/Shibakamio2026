@@ -22,6 +22,11 @@ public class AuthController {
 		this.accountService = accountService;
 	}
 
+	@GetMapping("/")
+	public String root() {
+		return "redirect:/login";
+	}
+
 	// G01 ログイン画面（G02のエラー表示もこの画面が兼ねる）
 	@GetMapping("/login")
 	public String loginPage(Model model) {

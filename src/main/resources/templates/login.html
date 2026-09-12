@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
+	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
-    <title>ログイン - 家計ログ</title>
+	<title>ログイン - 家計ログ</title>
 </head>
+
 <body>
-	<div th:replace="~{fragments/header :: header}"></div>
-    <h1>ログイン</h1>
+	<header th:fragment="header">
+		<span class="app-logo">家計ログ</span>
+	</header>
+	<main>
+		<h1>ログイン</h1>
 
-    <div th:if="${param.error}" style="color: red;">
-        メールアドレスまたはパスワードが正しくありません
-    </div>
+		<div th:if="${param.error}" style="color: red;">
+			メールアドレスまたはパスワードが正しくありません
+		</div>
 
-    <form th:action="@{/login}" th:object="${loginForm}" method="post">
-        <div>
-            <label for="email">メールアドレス</label>
-            <input type="email" id="email" th:field="*{email}" required>
-        </div>
-        <div>
-            <label for="password">パスワード</label>
-            <input type="password" id="password" th:field="*{password}" required>
-        </div>
-        <button type="submit">ログイン</button>
-    </form>
-
-    <p><a th:href="@{/signup}">新規アカウント登録はこちら</a></p>
+		<form th:action="@{/login}" th:object="${loginForm}" method="post">
+			<div>
+				<label for="email">メールアドレス</label>
+				<input type="email" id="email" th:field="*{email}" required>
+			</div>
+			<div>
+				<label for="password">パスワード</label>
+				<input type="password" id="password" th:field="*{password}" required>
+			</div>
+			<button type="submit">ログイン</button>
+			<p><a th:href="@{/signup}">新規アカウント登録はこちら</a></p>
+		</form>
+	</main>
+	<footer class="site-footer">
+		<p>&copy; 2026 家計ログ</p>
+	</footer>
 </body>
+
 </html>
