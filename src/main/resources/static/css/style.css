@@ -46,12 +46,9 @@ body {
 
 /* ===== ダッシュボード（home.html）専用レイアウト ===== */
 
-body.dashboard-page {
+.dashboard-page {
 	align-items: stretch;
 	justify-content: flex-start;
-}
-
-body.dashboard-page>*:not(header) {
 	max-width: 1200px;
 }
 
@@ -238,6 +235,7 @@ header .app-logo {
 	font-size: 1.1rem;
 	font-weight: bold;
 	letter-spacing: 0.05em;
+	text-decoration: none;
 }
 
 header nav {
@@ -324,8 +322,7 @@ h1 {
 }
 
 /* 白いカード（フォーム） */
-.card,
-form {
+.auth-card {
 	background: var(--color-card-bg);
 	border-radius: var(--radius);
 	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
@@ -335,11 +332,32 @@ form {
 	margin: 0;
 }
 
+.transaction-card {
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 32px;
+	width: 100%;
+	max-width: 850px;
+	margin: 0 auto;
+}
+
+.auth-switch {
+	text-align: center;
+	margin-top: 16px;
+	font-size: 0.9rem;
+}
+
 /* h1・エラー表示・カード以外のテキストなど、
    すべての直下要素の横幅をカードと揃える */
-body > *:not(header) {
+body>*:not(header) {
 	width: 100%;
 	max-width: 420px;
+}
+
+body>.site-footer {
+	max-width: none;
+	width: auto;
 }
 
 table {

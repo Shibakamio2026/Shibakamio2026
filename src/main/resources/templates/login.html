@@ -13,24 +13,28 @@
 		<span class="app-logo">家計ログ</span>
 	</header>
 	<main>
-		<h1>ログイン</h1>
+		<div class="auth-card">
+			<h1>ログイン</h1>
 
-		<div th:if="${param.error}" style="color: red;">
-			メールアドレスまたはパスワードが正しくありません
+			<div th:if="${param.error}" style="color: red;">
+				メールアドレスまたはパスワードが正しくありません
+			</div>
+
+			<form th:action="@{/login}" th:object="${loginForm}" method="post">
+				<div>
+					<label for="email">メールアドレス</label>
+					<input type="email" id="email" th:field="*{email}" required>
+				</div>
+				<div>
+					<label for="password">パスワード</label>
+					<input type="password" id="password" th:field="*{password}" required>
+				</div>
+				<button type="submit">ログイン</button>
+			</form>
+			<p class="auth-switch">
+				<a th:href="@{/signup}">新規アカウント登録はこちら</a>
+			</p>
 		</div>
-
-		<form th:action="@{/login}" th:object="${loginForm}" method="post">
-			<div>
-				<label for="email">メールアドレス</label>
-				<input type="email" id="email" th:field="*{email}" required>
-			</div>
-			<div>
-				<label for="password">パスワード</label>
-				<input type="password" id="password" th:field="*{password}" required>
-			</div>
-			<button type="submit">ログイン</button>
-		</form>
-		<p><a th:href="@{/signup}">新規アカウント登録はこちら</a></p>
 	</main>
 	<footer class="site-footer">
 		<p>&copy; 2026 Kakei Log</p>

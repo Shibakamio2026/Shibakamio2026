@@ -8,10 +8,11 @@
 	<title>ダッシュボード - 家計ログ</title>
 </head>
 
-<body class="dashboard-page">
-
+<body>
 	<header>
-		<span class="app-logo">家計ログ</span>
+		<a href="/home" class="app-logo">
+			<span>家計ログ</span>
+		</a>
 		<nav sec:authorize="isAuthenticated()">
 			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
 			<span class="nav-user" sec:authentication="name"></span>
@@ -21,99 +22,103 @@
 		</nav>
 	</header>
 
-	<div class="dashboard-layout">
-		<aside class="sidebar">
-			<nav>
-				<a th:href="@{/home}" class="active">ホーム</a>
-				<a th:href="@{/transactions/input}">収支入力</a>
-				<a th:href="@{/assets}">口座・資産一覧</a>
-				<a th:href="@{/reports}">分析・レポート</a>
-				<a th:href="@{/transactions/auto}">自動収支一覧</a>
-				<a th:href="@{/transactions/scheduled}">予定収支確認</a>
-				<a th:href="@{/calendar}">カレンダー</a>
-				<a th:href="@{/settings}">設定</a>
-			</nav>
-		</aside>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside class="sidebar">
+				<nav>
+					<a th:href="@{/home}" class="active">ホーム</a>
+					<a th:href="@{/transactions/input}">収支入力</a>
+					<a th:href="@{/assets}">口座・資産一覧</a>
+					<a th:href="@{/reports}">分析・レポート</a>
+					<a th:href="@{/transactions/auto}">自動収支一覧</a>
+					<a th:href="@{/transactions/scheduled}">予定収支確認</a>
+					<a th:href="@{/calendar}">カレンダー</a>
+					<a th:href="@{/settings}">設定</a>
+				</nav>
+			</aside>
 
-		<main class="dashboard-main">
-			<h1>ダッシュボード</h1>
-			<p class="welcome-text">ようこそ、<span th:text="${userName}"></span>さん！</p>
+			<main class="dashboard-main">
+				<h1>ダッシュボード</h1>
+				<p class="welcome-text">ようこそ、<span th:text="${userName}"></span>さん！</p>
 
-			<section class="summary-cards">
-				<div class="stat-card">
-					<div class="stat-label">総資産額</div>
-					<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(totalAssetBalance, 0, 'COMMA')}">
+				<section class="summary-cards">
+					<div class="stat-card">
+						<div class="stat-label">総資産額</div>
+						<div class="stat-value"
+							th:text="'¥' + ${#numbers.formatInteger(totalAssetBalance, 0, 'COMMA')}">
+						</div>
 					</div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-label">今月の収入</div>
-					<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(monthlyIncome, 0, 'COMMA')}"></div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-label">今月の支出</div>
-					<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(monthlyExpense, 0, 'COMMA')}"></div>
-				</div>
-				<div class="stat-card">
-					<div class="stat-label">見込み残高</div>
-					<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(projectedBalance, 0, 'COMMA')}">
+					<div class="stat-card">
+						<div class="stat-label">今月の収入</div>
+						<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(monthlyIncome, 0, 'COMMA')}">
+						</div>
 					</div>
-				</div>
-			</section>
-
-			<section class="main-columns">
-				<div class="chart-card">
-					<div class="tab-buttons">
-						<button type="button" class="active">資産推移</button>
-						<button type="button">月刊収支</button>
+					<div class="stat-card">
+						<div class="stat-label">今月の支出</div>
+						<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(monthlyExpense, 0, 'COMMA')}">
+						</div>
 					</div>
-					<p class="placeholder-note">グラフは「分析・レポート」画面で今後表示されます</p>
-				</div>
-				<div class="chart-card">
-					<h3>今月の支出内訳（円グラフ）</h3>
-					<p class="placeholder-note">グラフは「分析・レポート」画面で今後表示されます</p>
-				</div>
-			</section>
+					<div class="stat-card">
+						<div class="stat-label">見込み残高</div>
+						<div class="stat-value" th:text="'¥' + ${#numbers.formatInteger(projectedBalance, 0, 'COMMA')}">
+						</div>
+					</div>
+				</section>
 
-			<section class="two-col">
-				<div class="list-card">
-					<h3>最近の取引履歴（直近5件）</h3>
-					<ul>
-						<li th:each="t : ${recentTransactions}">
-							<span th:text="${t.transactionDate} + ' ' + ${t.category.categoryName}"></span>
-							<span
-								th:text="(${t.transactionType.name() == 'EXPENSE'} ? '-' : '+') + '¥' + ${#numbers.formatInteger(t.amount, 0, 'COMMA')}"
-								th:classappend="${t.transactionType.name() == 'EXPENSE'} ? 'amount-expense' : 'amount-income'"></span>
-						</li>
-						<li th:if="${recentTransactions.isEmpty()}">まだ取引履歴がありません</li>
-					</ul>
-					<a th:href="@{/transactions/list}">すべての履歴を見る →</a>
-				</div>
+				<section class="main-columns">
+					<div class="chart-card">
+						<div class="tab-buttons">
+							<button type="button" class="active">資産推移</button>
+							<button type="button">月刊収支</button>
+						</div>
+						<p class="placeholder-note">グラフは「分析・レポート」画面で今後表示されます</p>
+					</div>
+					<div class="chart-card">
+						<h3>今月の支出内訳（円グラフ）</h3>
+						<p class="placeholder-note">グラフは「分析・レポート」画面で今後表示されます</p>
+					</div>
+				</section>
 
-				<div class="list-card">
-					<h3>連携口座・資産内訳</h3>
-					<ul>
-						<li th:each="entry : ${assetBalances}">
-							<span th:text="${entry.key.assetName}"></span>
-							<span th:text="'¥' + ${#numbers.formatInteger(entry.value, 0, 'COMMA')}"></span>
-						</li>
-						<li th:if="${assetBalances.isEmpty()}">まだ資産が登録されていません</li>
-					</ul>
-					<a th:href="@{/assets}">資産口座を追加・更新 →</a>
-				</div>
-			</section>
+				<section class="two-col">
+					<div class="list-card">
+						<h3>最近の取引履歴（直近5件）</h3>
+						<ul>
+							<li th:each="t : ${recentTransactions}">
+								<span th:text="${t.transactionDate} + ' ' + ${t.category.categoryName}"></span>
+								<span
+									th:text="(${t.transactionType.name() == 'EXPENSE'} ? '-' : '+') + '¥' + ${#numbers.formatInteger(t.amount, 0, 'COMMA')}"
+									th:classappend="${t.transactionType.name() == 'EXPENSE'} ? 'amount-expense' : 'amount-income'"></span>
+							</li>
+							<li th:if="${recentTransactions.isEmpty()}">まだ取引履歴がありません</li>
+						</ul>
+						<a th:href="@{/transactions/list}">すべての履歴を見る →</a>
+					</div>
 
-			<section class="list-card">
-				<h3>予定収支サマリー</h3>
-				<p>
-					今月予定されている自動収支: <span th:text="${scheduledCount}"></span>件
-					(<span
-						th:text="(${scheduledNet} >= 0 ? '+' : '') + '¥' + ${#numbers.formatInteger(scheduledNet, 0, 'COMMA')}"></span>)
-				</p>
-				<a th:href="@{/transactions/scheduled}">予定収支確認画面へ →</a>
-			</section>
-		</main>
-	</div>
+					<div class="list-card">
+						<h3>連携口座・資産内訳</h3>
+						<ul>
+							<li th:each="entry : ${assetBalances}">
+								<span th:text="${entry.key.assetName}"></span>
+								<span th:text="'¥' + ${#numbers.formatInteger(entry.value, 0, 'COMMA')}"></span>
+							</li>
+							<li th:if="${assetBalances.isEmpty()}">まだ資産が登録されていません</li>
+						</ul>
+						<a th:href="@{/assets}">資産口座を追加・更新 →</a>
+					</div>
+				</section>
 
+				<section class="list-card">
+					<h3>予定収支サマリー</h3>
+					<p>
+						今月予定されている自動収支: <span th:text="${scheduledCount}"></span>件
+						(<span
+							th:text="(${scheduledNet} >= 0 ? '+' : '') + '¥' + ${#numbers.formatInteger(scheduledNet, 0, 'COMMA')}"></span>)
+					</p>
+					<a th:href="@{/transactions/scheduled}">予定収支確認画面へ →</a>
+				</section>
+			</main>
+		</div>
+	</main>
 	<footer class="site-footer">
 		<p>&copy; 2026 Kakei Log</p>
 	</footer>
