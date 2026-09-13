@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
-	<title>カレンダー</title>
+	<title>カレンダー - 家計ログ</title>
 </head>
 
 <body>
-	<header th:fragment="header">
-		<span class="app-logo">家計ログ</span>
+	<header>
+		<a href="/home" class="app-logo">
+			<span>家計ログ</span>
+		</a>
 		<nav sec:authorize="isAuthenticated()">
 			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
 			<span class="nav-user" sec:authentication="name"></span>
@@ -63,7 +65,7 @@
 		<p><a th:href="@{/home}">ホームへ戻る</a></p>
 	</main>
 	<footer class="site-footer">
-		<p>© 2024 家計ログ</p>
+		<p>&copy; 2026 Kakei Log</p>
 	</footer>
 </body>
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
 
 <head>
 	<meta charset="UTF-8">
@@ -9,8 +9,10 @@
 </head>
 
 <body>
-	<header th:fragment="header">
-		<span class="app-logo">家計ログ</span>
+	<header>
+		<a href="/home" class="app-logo">
+			<span>家計ログ</span>
+		</a>
 		<nav sec:authorize="isAuthenticated()">
 			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
 			<span class="nav-user" sec:authentication="name"></span>

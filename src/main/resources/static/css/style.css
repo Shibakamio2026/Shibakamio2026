@@ -44,6 +44,179 @@ body {
 	padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
+/* ===== ダッシュボード（home.html）専用レイアウト ===== */
+
+body.dashboard-page {
+	align-items: stretch;
+	justify-content: flex-start;
+}
+
+body.dashboard-page>*:not(header) {
+	max-width: 1200px;
+}
+
+.dashboard-layout {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+	margin: 0 auto;
+}
+
+.sidebar {
+	width: 200px;
+	flex-shrink: 0;
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 20px 0;
+}
+
+.sidebar nav {
+	display: flex;
+	flex-direction: column;
+}
+
+.sidebar nav a {
+	padding: 10px 20px;
+	color: var(--color-text);
+	font-weight: normal;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+	background-color: var(--color-primary);
+	color: #ffffff;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.dashboard-main {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.dashboard-main h1 {
+	text-align: left;
+}
+
+.welcome-text {
+	text-align: left;
+	font-size: 1rem;
+}
+
+.summary-cards {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 16px;
+}
+
+.stat-card,
+.chart-card,
+.list-card {
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 20px;
+}
+
+.stat-label {
+	font-size: 0.8rem;
+	color: var(--color-text-light);
+	margin-bottom: 6px;
+}
+
+.stat-value {
+	font-size: 1.4rem;
+	font-weight: bold;
+	color: var(--color-primary-dark);
+}
+
+.main-columns,
+.two-col {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+.tab-buttons {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.tab-buttons button {
+	padding: 6px 14px;
+	border-radius: 999px;
+	border: 1px solid #d5e8dc;
+	background: #fafffc;
+	color: var(--color-text-light);
+	font-size: 0.85rem;
+	cursor: pointer;
+}
+
+.tab-buttons button.active {
+	background-color: var(--color-primary);
+	color: #ffffff;
+	border-color: var(--color-primary);
+}
+
+.placeholder-note {
+	color: var(--color-text-light);
+	font-size: 0.85rem;
+	text-align: left;
+	margin: 0;
+}
+
+.list-card h3 {
+	margin: 0 0 12px;
+	font-size: 1rem;
+	text-align: left;
+}
+
+.list-card ul {
+	list-style: none;
+	margin: 0 0 12px;
+	padding: 0;
+}
+
+.list-card li {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid #eef5f0;
+	font-size: 0.9rem;
+}
+
+.amount-expense {
+	color: var(--color-error);
+}
+
+.amount-income {
+	color: var(--color-primary-dark);
+}
+
+@media (max-width: 800px) {
+	.dashboard-layout {
+		flex-direction: column;
+	}
+
+	.sidebar {
+		width: 100%;
+	}
+
+	.summary-cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.main-columns,
+	.two-col {
+		grid-template-columns: 1fr;
+	}
+}
+
 /* ===== 固定ヘッダー ===== */
 header {
 	position: fixed;
@@ -61,6 +234,7 @@ header {
 }
 
 header .app-logo {
+	color: #ffffff;
 	font-size: 1.1rem;
 	font-weight: bold;
 	letter-spacing: 0.05em;
@@ -78,7 +252,8 @@ header nav .nav-record {
 	padding: 6px 14px;
 	border-radius: 999px;
 	font-size: 0.75rem;
-	white-space: nowrap;      /* 追加：折り返し防止 */
+	white-space: nowrap;
+	/* 追加：折り返し防止 */
 }
 
 header nav .nav-record:hover {
@@ -107,12 +282,16 @@ header .nav-logout-form button[type="submit"] {
 	width: auto;
 	margin: 0;
 	padding: 6px 14px;
-	background-color: rgba(255, 255, 255, 0.15);   /* 変更：背景を少し明るく */
+	background-color: rgba(255, 255, 255, 0.15);
+	/* 変更：背景を少し明るく */
 	color: #ffffff;
-	border: 1px solid rgba(255, 255, 255, 0.85);   /* 変更：ボーダーを濃く */
+	border: 1px solid rgba(255, 255, 255, 0.85);
+	/* 変更：ボーダーを濃く */
 	font-size: 0.85rem;
-	font-weight: bold;                              /* 追加：太字にして視認性UP */
-	white-space: nowrap;                            /* 追加：念のため折り返し防止 */
+	font-weight: bold;
+	/* 追加：太字にして視認性UP */
+	white-space: nowrap;
+	/* 追加：念のため折り返し防止 */
 	flex-shrink: 0;
 }
 
@@ -129,6 +308,7 @@ header .nav-logout-form button[type="submit"]:hover {
 	height: var(--footer-height);
 	background-color: var(--color-primary-dark);
 	color: #eafcf1;
+	text-align: center;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -157,7 +337,7 @@ form {
 
 /* h1・エラー表示・カード以外のテキストなど、
    すべての直下要素の横幅をカードと揃える */
-body>* :not(header) {
+body > *:not(header) {
 	width: 100%;
 	max-width: 420px;
 }
