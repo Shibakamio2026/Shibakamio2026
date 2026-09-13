@@ -215,7 +215,7 @@ body {
 }
 
 /* ===== 固定ヘッダー ===== */
-header {
+.site-header {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -230,7 +230,7 @@ header {
 	z-index: 10;
 }
 
-header .app-logo {
+.site-header .app-logo {
 	color: #ffffff;
 	font-size: 1.1rem;
 	font-weight: bold;
@@ -238,13 +238,13 @@ header .app-logo {
 	text-decoration: none;
 }
 
-header nav {
+.site-header-nav {
 	display: flex;
 	align-items: center;
 	gap: 16px;
 }
 
-header nav .nav-record {
+.nav-record {
 	background-color: #ffffff;
 	color: var(--color-primary-dark);
 	padding: 6px 14px;
@@ -254,18 +254,18 @@ header nav .nav-record {
 	/* 追加：折り返し防止 */
 }
 
-header nav .nav-record:hover {
+.nav-record:hover {
 	background-color: #eafcf1;
 	text-decoration: none;
 }
 
-header nav .nav-user {
+.nav-user {
 	color: #ffffff;
 	font-size: 0.9rem;
 	font-weight: bold;
 }
 
-header .nav-logout-form {
+.nav-logout-form {
 	display: inline;
 	margin: 0;
 	padding: 0;
@@ -276,7 +276,7 @@ header .nav-logout-form {
 	flex-shrink: 0;
 }
 
-header .nav-logout-form button[type="submit"] {
+.nav-logout-form button[type="submit"] {
 	width: auto;
 	margin: 0;
 	padding: 6px 14px;
@@ -293,7 +293,7 @@ header .nav-logout-form button[type="submit"] {
 	flex-shrink: 0;
 }
 
-header .nav-logout-form button[type="submit"]:hover {
+.nav-logout-form button[type="submit"]:hover {
 	background-color: rgba(255, 255, 255, 0.3);
 }
 

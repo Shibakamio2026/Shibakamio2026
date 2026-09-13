@@ -9,11 +9,11 @@
 </head>
 
 <body>
-	<header>
+	<header class="site-header">
 		<a href="/home" class="app-logo">
 			<span>家計ログ</span>
 		</ah>
-		<nav sec:authorize="isAuthenticated()">
+		<nav class="site-header-nav" sec:authorize="isAuthenticated()">
 			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
 			<span class="nav-user" sec:authentication="name"></span>
 			<form th:action="@{/logout}" method="post" class="nav-logout-form">
