@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>カレンダー</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+	<h2>カレンダー</h2>
+    <h1 th:text="${targetMonth.year} + '年' + ${targetMonth.monthValue} + '月'"></h1>
+
+    <p>
+        <a th:href="@{/calendar(year=${prevMonth.year}, month=${prevMonth.monthValue})}">← 前月</a>
+        ｜
+        <a th:href="@{/calendar(year=${nextMonth.year}, month=${nextMonth.monthValue})}">翌月 →</a>
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="week : ${weeks}">
+                <td th:each="day : ${week}">
+                    <div th:text="${day.dayOfMonth}"
+                         th:style="${day.month.value != targetMonth.monthValue} ? 'color:#bbb;' : ''"></div>
+
+                    <div th:if="${netTotal.get(day)} != null"
+                         th:text="${netTotal.get(day)}"
+                         th:style="${netTotal.get(day)} != null and ${netTotal.get(day)} < 0 ? 'color:#e05c5c;' : 'color:#4caf7d;'"></div>
+
+                    <div th:each="t : ${byDate.get(day)}">
+                        <a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}"
+                           th:text="${t.category.categoryName} + ' ' + ${t.amount}"></a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/home}">ホームへ戻る</a></p>
+</body>
+</html>

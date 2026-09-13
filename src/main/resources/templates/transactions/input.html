@@ -19,6 +19,15 @@
 		</nav>
 	</header>
 	<main>
+		<header th:fragment="header">
+			<span class="app-logo">家計ログ</span>
+			<nav sec:authorize="isAuthenticated()">
+				<span class="nav-user" sec:authentication="name"></span>
+				<form th:action="@{/logout}" method="post" class="nav-logout-form">
+					<button type="submit">ログアウト</button>
+				</form>
+			</nav>
+		</header>
 		<h1>収支入力</h1>
 
 		<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
@@ -34,7 +43,8 @@
 				<label>カテゴリー</label>
 				<select th:field="*{categoryId}">
 					<option value="">選択してください</option>
-					<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
+					<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}">
+					</option>
 				</select>
 			</div>
 

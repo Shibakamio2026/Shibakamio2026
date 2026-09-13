@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<title>取込結果の確認</title>
+</head>
+
+<body>
+	<header th:fragment="header">
+		<span class="app-logo">家計ログ</span>
+		<nav sec:authorize="isAuthenticated()">
+			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
+			<span class="nav-user" sec:authentication="name"></span>
+			<form th:action="@{/logout}" method="post" class="nav-logout-form">
+				<button type="submit">ログアウト</button>
+			</form>
+		</nav>
+	</header>
+	<h1>取込結果</h1>
+
+	<form th:action="@{/payments/import/confirm}" th:object="${csvImportBatch}" method="post">
+		<table>
+			<thead>
+				<tr>
+					<th>取引日</th>
+					<th>出金金額</th>
+					<th>入金金額</th>
+					<th>取引内容</th>
+					<th>取引先</th>
+					<th>種別</th>
+					<th>カテゴリー／振替元資産</th>
+					<th>取り込む</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="row, rowStat : *{rows}">
+					<td th:text="${row.transactionDate}"></td>
+					<td th:text="${row.withdrawalAmount}"></td>
+					<td th:text="${row.depositAmount}"></td>
+					<td th:text="${row.content}"></td>
+					<td th:text="${row.businessPartner}"></td>
+					<td>
+						<span th:if="${row.duplicateWarning}" style="color:red;">重複の可能性あり／</span>
+						<span
+							th:text="${row.candidateType == 'EXPENSE'} ? '支出' : (${row.candidateType == 'CHARGE'} ? 'チャージ' : 'その他入金')"></span>
+					</td>
+					<td>
+						<select th:if="${row.candidateType != 'CHARGE'}"
+							th:field="*{rows[__${rowStat.index}__].categoryId}">
+							<option value="">選択してください</option>
+							<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}">
+							</option>
+						</select>
+						<select th:if="${row.candidateType == 'CHARGE'}"
+							th:field="*{rows[__${rowStat.index}__].sourceAssetId}">
+							<option value="">振替元資産を選択</option>
+							<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
+						</select>
+					</td>
+					<td>
+						<input type="checkbox" th:field="*{rows[__${rowStat.index}__].checked}">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<button type="submit">登録</button>
+	</form>
+
+	<p><a th:href="@{/payments/import}">やり直す</a></p>
+</body>
+
+</html>

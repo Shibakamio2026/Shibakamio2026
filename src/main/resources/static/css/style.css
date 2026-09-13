@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 /* ==========================
    学生向け家計簿 - 共通スタイル
    ========================== */
@@ -42,7 +44,7 @@ body {
 	padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
-/* ===== 固定ヘッダー（fragments/header.html の <header> タグに適用） ===== */
+/* ===== 固定ヘッダー ===== */
 header {
 	position: fixed;
 	top: 0;
