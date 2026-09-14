@@ -124,6 +124,21 @@ body {
 	text-decoration: none;
 }
 
+/* ===== サイドバー付き汎用ページ（一覧・カレンダー・各種フォームなど）用ラッパー ===== */
+.page-content {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+@media (max-width: 800px) {
+	.page-content {
+		width: 100%;
+	}
+}
+
 /* ===== ダッシュボード（home.html）専用レイアウト ===== */
 
 .dashboard-main {

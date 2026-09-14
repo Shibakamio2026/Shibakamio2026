@@ -21,84 +21,103 @@
 			</form>
 		</nav>
 	</header>
-	<main>
-		<div class="transaction-card">
-			<h1>収支入力</h1>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside class="sidebar">
+				<nav>
+					<a th:href="@{/home}">ホーム</a>
+					<a th:href="@{/transactions/input}" class="active">収支入力</a>
+					<a th:href="@{/assets}">口座・資産一覧</a>
+					<a th:href="@{/reports}">分析・レポート</a>
+					<a th:href="@{/transactions/auto}">自動収支一覧</a>
+					<a th:href="@{/transactions/scheduled}">予定収支確認</a>
+					<a th:href="@{/calendar}">カレンダー</a>
+					<a th:href="@{/settings}">設定</a>
+				</nav>
+			</aside>
 
-			<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
+			<div class="page-content">
+				<div class="transaction-card">
+					<h1>収支入力</h1>
 
-			<form th:action="@{/transactions/input}" th:object="${transactionForm}" method="post">
+					<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}"></div>
 
-				<div>
-					<label><input type="radio" th:field="*{transactionType}" value="EXPENSE"> 支出</label>
-					<label><input type="radio" th:field="*{transactionType}" value="INCOME"> 収入</label>
+					<form th:action="@{/transactions/input}" th:object="${transactionForm}" method="post">
+
+						<div>
+							<label><input type="radio" th:field="*{transactionType}" value="EXPENSE"> 支出</label>
+							<label><input type="radio" th:field="*{transactionType}" value="INCOME"> 収入</label>
+						</div>
+
+						<div>
+							<label>カテゴリー</label>
+							<select th:field="*{categoryId}">
+								<option value="">選択してください</option>
+								<option th:each="c : ${categories}" th:value="${c.categoryId}"
+									th:text="${c.categoryName}">
+								</option>
+							</select>
+						</div>
+
+						<div>
+							<label>資産</label>
+							<select th:field="*{assetId}">
+								<option value="">選択してください</option>
+								<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}">
+								</option>
+							</select>
+						</div>
+
+						<div>
+							<label>金額</label>
+							<input type="number" th:field="*{amount}">
+						</div>
+
+						<div>
+							<label>メモ（任意）</label>
+							<input type="text" th:field="*{memo}">
+						</div>
+
+						<div>
+							<label><input type="radio" th:field="*{registrationType}" value="ONCE"> 一度だけ登録</label>
+							<label><input type="radio" th:field="*{registrationType}" value="AUTO"> 自動収支として登録</label>
+						</div>
+
+						<div>
+							<label>取引日（一度だけ登録の場合）</label>
+							<input type="date" th:field="*{transactionDate}">
+						</div>
+
+						<div>
+							<label>発生間隔（自動収支の場合）</label>
+							<select th:field="*{intervalType}">
+								<option value="">選択してください</option>
+								<option value="WEEKLY">毎週</option>
+								<option value="MONTHLY">毎月</option>
+								<option value="YEARLY">毎年</option>
+							</select>
+						</div>
+
+						<div>
+							<label>開始日（自動収支の場合）</label>
+							<input type="date" th:field="*{startDate}">
+						</div>
+
+						<div>
+							<label>終了日（自動収支・任意、無期限なら空欄）</label>
+							<input type="date" th:field="*{endDate}">
+						</div>
+
+						<button type="submit">登録</button>
+					</form>
+					<p class="page-nav-links">
+						<a th:href="@{/payments/import}">CSV/スマホ決済データから取り込む →</a>
+					</p>
+					<p class="page-nav-links">
+						<a th:href="@{/transactions/auto}">自動収支一覧を見る →</a>
+					</p>
 				</div>
-
-				<div>
-					<label>カテゴリー</label>
-					<select th:field="*{categoryId}">
-						<option value="">選択してください</option>
-						<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}">
-						</option>
-					</select>
-				</div>
-
-				<div>
-					<label>資産</label>
-					<select th:field="*{assetId}">
-						<option value="">選択してください</option>
-						<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
-					</select>
-				</div>
-
-				<div>
-					<label>金額</label>
-					<input type="number" th:field="*{amount}">
-				</div>
-
-				<div>
-					<label>メモ（任意）</label>
-					<input type="text" th:field="*{memo}">
-				</div>
-
-				<div>
-					<label><input type="radio" th:field="*{registrationType}" value="ONCE"> 一度だけ登録</label>
-					<label><input type="radio" th:field="*{registrationType}" value="AUTO"> 自動収支として登録</label>
-				</div>
-
-				<div>
-					<label>取引日（一度だけ登録の場合）</label>
-					<input type="date" th:field="*{transactionDate}">
-				</div>
-
-				<div>
-					<label>発生間隔（自動収支の場合）</label>
-					<select th:field="*{intervalType}">
-						<option value="">選択してください</option>
-						<option value="WEEKLY">毎週</option>
-						<option value="MONTHLY">毎月</option>
-						<option value="YEARLY">毎年</option>
-					</select>
-				</div>
-
-				<div>
-					<label>開始日（自動収支の場合）</label>
-					<input type="date" th:field="*{startDate}">
-				</div>
-
-				<div>
-					<label>終了日（自動収支・任意、無期限なら空欄）</label>
-					<input type="date" th:field="*{endDate}">
-				</div>
-
-				<button type="submit">登録</button>
-			</form>
-			<p class="page-nav-links">
-				<a th:href="@{/payments/import}">CSV/スマホ決済データから取り込む →</a>
-			</p>
-			<p class="page-nav-links">
-				<a th:href="@{/transactions/auto}">自動収支一覧を見る →</a>
-			</p>
+			</div>
 		</div>
 	</main>
 	<footer class="site-footer">

@@ -12,16 +12,31 @@
 	<header class="site-header">
 		<a href="/home" class="app-logo">
 			<span>家計ログ</span>
-			</ah>
-			<nav class="site-header-nav" sec:authorize="isAuthenticated()">
-				<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
-				<span class="nav-user" sec:authentication="name"></span>
-				<form th:action="@{/logout}" method="post" class="nav-logout-form">
-					<button type="submit">ログアウト</button>
-				</form>
-			</nav>
+		</a>
+		<nav class="site-header-nav" sec:authorize="isAuthenticated()">
+			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
+			<span class="nav-user" sec:authentication="name"></span>
+			<form th:action="@{/logout}" method="post" class="nav-logout-form">
+				<button type="submit">ログアウト</button>
+			</form>
+		</nav>
 	</header>
-	<main>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside class="sidebar">
+				<nav>
+					<a th:href="@{/home}">ホーム</a>
+					<a th:href="@{/transactions/input}">収支入力</a>
+					<a th:href="@{/assets}">口座・資産一覧</a>
+					<a th:href="@{/reports}">分析・レポート</a>
+					<a th:href="@{/transactions/auto}">自動収支一覧</a>
+					<a th:href="@{/transactions/scheduled}">予定収支確認</a>
+					<a th:href="@{/calendar}">カレンダー</a>
+					<a th:href="@{/settings}">設定</a>
+				</nav>
+			</aside>
+
+			<div class="page-content">
 		<div class="import-card">
 
 			<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
@@ -79,6 +94,8 @@
 			</form>
 
 			<p><a th:href="@{/payments/import}">やり直す</a></p>
+		</div>
+			</div>
 		</div>
 	</main>
 

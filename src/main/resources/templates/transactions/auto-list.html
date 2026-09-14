@@ -21,8 +21,22 @@
 			</form>
 		</nav>
 	</header>
-	<main>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside class="sidebar">
+				<nav>
+					<a th:href="@{/home}">ホーム</a>
+					<a th:href="@{/transactions/input}">収支入力</a>
+					<a th:href="@{/assets}">口座・資産一覧</a>
+					<a th:href="@{/reports}">分析・レポート</a>
+					<a th:href="@{/transactions/auto}" class="active">自動収支一覧</a>
+					<a th:href="@{/transactions/scheduled}">予定収支確認</a>
+					<a th:href="@{/calendar}">カレンダー</a>
+					<a th:href="@{/settings}">設定</a>
+				</nav>
+			</aside>
 
+			<div class="page-content">
 		<div class="list-page-card">
 			<h1>自動収支一覧</h1>
 
@@ -67,6 +81,8 @@
 
 			<p><a th:href="@{/transactions/scheduled}">予定収支確認画面へ</a></p>
 			<p><a th:href="@{/home}">ホームへ戻る</a></p>
+		</div>
+			</div>
 		</div>
 	</main>
 	<footer class="site-footer">

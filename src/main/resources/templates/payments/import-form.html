@@ -21,30 +21,48 @@
 			</form>
 		</nav>
 	</header>
-	<main>
-		<div class="import-card">
-			<h1>スマホ決済データ取込</h1>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside class="sidebar">
+				<nav>
+					<a th:href="@{/home}">ホーム</a>
+					<a th:href="@{/transactions/input}">収支入力</a>
+					<a th:href="@{/assets}">口座・資産一覧</a>
+					<a th:href="@{/reports}">分析・レポート</a>
+					<a th:href="@{/transactions/auto}">自動収支一覧</a>
+					<a th:href="@{/transactions/scheduled}">予定収支確認</a>
+					<a th:href="@{/calendar}">カレンダー</a>
+					<a th:href="@{/settings}">設定</a>
+				</nav>
+			</aside>
 
-			<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
+			<div class="page-content">
+				<div class="import-card">
+					<h1>スマホ決済データ取込</h1>
 
-			<form th:action="@{/payments/import/preview}" method="post" enctype="multipart/form-data">
-				<div>
-					<label>取込先の資産</label>
-					<select name="assetId" required>
-						<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
-					</select>
+					<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
+
+					<form th:action="@{/payments/import/preview}" method="post" enctype="multipart/form-data">
+						<div>
+							<label>取込先の資産</label>
+							<select name="assetId" required>
+								<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}">
+								</option>
+							</select>
+						</div>
+
+						<div>
+							<label>PayPayの利用明細CSVをアップロードしてください</label>
+							<p style="font-size:0.85rem;color:#6b7d73;">対応形式：CSV（UTF-8）／最大5MB</p>
+							<input type="file" name="file" accept=".csv" required>
+						</div>
+
+						<button type="submit">確認する</button>
+					</form>
+
+					<p><a th:href="@{/home}">ホームへ戻る</a></p>
 				</div>
-
-				<div>
-					<label>PayPayの利用明細CSVをアップロードしてください</label>
-					<p style="font-size:0.85rem;color:#6b7d73;">対応形式：CSV（UTF-8）／最大5MB</p>
-					<input type="file" name="file" accept=".csv" required>
-				</div>
-
-				<button type="submit">確認する</button>
-			</form>
-
-			<p><a th:href="@{/home}">ホームへ戻る</a></p>
+			</div>
 		</div>
 	</main>
 
