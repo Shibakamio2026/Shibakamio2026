@@ -44,6 +44,26 @@ body {
 	padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
+/* ===== 一覧・カレンダー系ページ用の白カード ===== */
+.list-page-card {
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 32px;
+	width: 100%;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.list-page-card h1 {
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+.list-page-card>p:first-of-type {
+	text-align: center;
+}
+
 .dashboard-page {
 	align-items: stretch;
 	justify-content: flex-start;
@@ -372,6 +392,8 @@ body>.site-footer {
 
 table {
 	max-width: 100%;
+	width: 100%;
+	margin: 0 auto;
 }
 
 /* フォーム部品 */
