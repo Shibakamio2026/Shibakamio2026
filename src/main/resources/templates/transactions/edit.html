@@ -22,56 +22,59 @@
 		</nav>
 	</header>
 	<main>
-		<h1>収支詳細・編集</h1>
+		<div class="transaction-card">
+			<h1>収支詳細・編集</h1>
 
-		<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
+			<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
 
-		<form th:action="@{/transactions/{id}/edit(id=${transactionId})}" th:object="${transactionEditForm}"
-			method="post">
+			<form th:action="@{/transactions/{id}/edit(id=${transactionId})}" th:object="${transactionEditForm}"
+				method="post">
 
-			<div>
-				<label><input type="radio" th:field="*{transactionType}" value="EXPENSE"> 支出</label>
-				<label><input type="radio" th:field="*{transactionType}" value="INCOME"> 収入</label>
-			</div>
+				<div>
+					<label><input type="radio" th:field="*{transactionType}" value="EXPENSE"> 支出</label>
+					<label><input type="radio" th:field="*{transactionType}" value="INCOME"> 収入</label>
+				</div>
 
-			<div>
-				<label>取引日</label>
-				<input type="date" th:field="*{transactionDate}">
-			</div>
+				<div>
+					<label>取引日</label>
+					<input type="date" th:field="*{transactionDate}">
+				</div>
 
-			<div>
-				<label>カテゴリー</label>
-				<select th:field="*{categoryId}">
-					<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"></option>
-				</select>
-			</div>
+				<div>
+					<label>カテゴリー</label>
+					<select th:field="*{categoryId}">
+						<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}">
+						</option>
+					</select>
+				</div>
 
-			<div>
-				<label>資産</label>
-				<select th:field="*{assetId}">
-					<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
-				</select>
-			</div>
+				<div>
+					<label>資産</label>
+					<select th:field="*{assetId}">
+						<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
+					</select>
+				</div>
 
-			<div>
-				<label>金額</label>
-				<input type="number" th:field="*{amount}">
-			</div>
+				<div>
+					<label>金額</label>
+					<input type="number" th:field="*{amount}">
+				</div>
 
-			<div>
-				<label>メモ</label>
-				<input type="text" th:field="*{memo}">
-			</div>
+				<div>
+					<label>メモ</label>
+					<input type="text" th:field="*{memo}">
+				</div>
 
-			<button type="submit">保存</button>
-		</form>
+				<button type="submit">保存</button>
+			</form>
 
-		<form th:action="@{/transactions/{id}/delete(id=${transactionId})}" method="post"
-			onsubmit="return confirm('この収支を削除しますか？');">
-			<button type="submit">削除</button>
-		</form>
+			<form th:action="@{/transactions/{id}/delete(id=${transactionId})}" method="post"
+				onsubmit="return confirm('この収支を削除しますか？');">
+				<button type="submit">削除</button>
+			</form>
 
-		<p><a th:href="@{/transactions/list}">収支一覧に戻る</a></p>
+			<p><a th:href="@{/transactions/list}">収支一覧に戻る</a></p>
+		</div>
 	</main>
 	<footer class="site-footer">
 		<p>&copy; 2026 Kakei Log</p>
