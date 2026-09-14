@@ -12,7 +12,10 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+@NoArgsConstructor
 
 @Entity
 @Table(name = "users")
