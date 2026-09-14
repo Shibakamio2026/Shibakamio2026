@@ -4,17 +4,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+	private final CustomAuthenticationSuccessHandler successHandler;
+
+	public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
+		this.successHandler = successHandler;
 	}
 
 	@Bean
@@ -28,7 +27,7 @@ public class SecurityConfig {
 						.loginProcessingUrl("/login")
 						.usernameParameter("email")
 						.passwordParameter("password")
-						.defaultSuccessUrl("/home", true)
+						.successHandler(successHandler) // defaultSuccessUrlの代わりにこちらを使う
 						.failureUrl("/login?error")
 						.permitAll())
 				.logout(logout -> logout
