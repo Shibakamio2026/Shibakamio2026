@@ -12,24 +12,12 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * ユーザー（利用者）エンティティ。
- *
- * 【重要】資産管理モジュール（asset-module）で作成したものと同一内容です。
- * 実リポジトリには1つだけ存在すればよいため、両モジュールを取り込む際は
- * どちらか一方のファイルだけを残してください（内容は同じなので、後から
- * 取り込んだ方を消しても問題ありません）。
- * 認証チームが users テーブルに対応するエンティティを作成済みの場合は、
- * そちらに統合してこのクラスは削除してください。
- */
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
-@NoArgsConstructor
 public class User {
 
 	@Id
