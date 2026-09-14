@@ -44,8 +44,6 @@ body {
 	padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
-/* ===== ダッシュボード（home.html）専用レイアウト ===== */
-
 .dashboard-page {
 	align-items: stretch;
 	justify-content: flex-start;
@@ -86,6 +84,8 @@ body {
 	font-weight: bold;
 	text-decoration: none;
 }
+
+/* ===== ダッシュボード（home.html）専用レイアウト ===== */
 
 .dashboard-main {
 	flex: 1;
