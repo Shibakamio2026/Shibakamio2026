@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" th:href="@{/css/style.css}">
-	<title>スマホ決済データ取込</title>
+	<title>スマホ決済データ取込 - 家計ログ</title>
 </head>
 
 <body>
@@ -22,29 +22,30 @@
 		</nav>
 	</header>
 	<main>
-		<h1>スマホ決済データ取込</h1>
+		<div class="import-card">
+			<h1>スマホ決済データ取込</h1>
 
-		<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
+			<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
 
-		<form th:action="@{/payments/import/preview}" method="post" enctype="multipart/form-data">
-			<div>
-				<label>取込先の資産</label>
-				<select name="assetId" required>
-					<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
-				</select>
-			</div>
+			<form th:action="@{/payments/import/preview}" method="post" enctype="multipart/form-data">
+				<div>
+					<label>取込先の資産</label>
+					<select name="assetId" required>
+						<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"></option>
+					</select>
+				</div>
 
-			<div>
-				<label>PayPayの利用明細CSVをアップロードしてください</label>
-				<p style="font-size:0.85rem;color:#6b7d73;">対応形式：CSV（UTF-8）／最大5MB</p>
-				<input type="file" name="file" accept=".csv" required>
-			</div>
+				<div>
+					<label>PayPayの利用明細CSVをアップロードしてください</label>
+					<p style="font-size:0.85rem;color:#6b7d73;">対応形式：CSV（UTF-8）／最大5MB</p>
+					<input type="file" name="file" accept=".csv" required>
+				</div>
 
-			<button type="submit">確認する</button>
-		</form>
+				<button type="submit">確認する</button>
+			</form>
 
-		<p><a th:href="@{/home}">ホームへ戻る</a></p>
-
+			<p><a th:href="@{/home}">ホームへ戻る</a></p>
+		</div>
 	</main>
 
 	<footer class="site-footer">

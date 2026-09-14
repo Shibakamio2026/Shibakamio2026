@@ -348,6 +348,16 @@ h1 {
 	font-size: 0.9rem;
 }
 
+.import-card {
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 32px;
+	width: 100%;
+	max-width: 420px;
+	margin: 0 auto;
+}
+
 /* h1・エラー表示・カード以外のテキストなど、
    すべての直下要素の横幅をカードと揃える */
 body>*:not(header) {
