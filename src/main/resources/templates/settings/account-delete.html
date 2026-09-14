@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>アカウント削除</title>
+    <link rel="stylesheet" th:href="@{/css/error-message.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+<body>
+<div class="wide-card">
+<h1>アカウント削除</h1>
+
+<div class="error-banner">
+    アカウントを削除すると、収支・自動収支・予定収支・カテゴリー・資産・資産間振替を含む
+    すべてのデータが完全に削除され、元に戻すことはできません。
+</div>
+
+<form th:action="@{/settings/account/delete}" th:object="${accountDeleteForm}" method="post">
+
+    <div class="form-row">
+        <label for="currentPassword">本人確認のため、現在のパスワードを入力してください</label>
+        <div th:if="${errors != null and errors.get('currentPassword') != null}"
+             class="field-error" th:text="${errors.get('currentPassword')}"></div>
+        <input type="password" id="currentPassword" th:field="*{currentPassword}"
+               th:classappend="${errors != null and errors.get('currentPassword') != null} ? 'invalid' : ''"/>
+    </div>
+
+    <button type="submit" onclick="return confirm('本当にアカウントを削除しますか？この操作は取り消せません。');">
+        アカウントを削除する
+    </button>
+</form>
+
+<p><a th:href="@{/settings/account}">キャンセル</a></p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>資産登録</title>
+    <link rel="stylesheet" th:href="@{/css/error-message.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+<body>
+<div class="wide-card">
+<h1>資産登録</h1>
+
+<form th:action="@{/assets/new}" th:object="${assetCreateForm}" method="post">
+
+    <div class="form-row">
+        <label for="assetName">資産名</label>
+        <div th:if="${errors != null and errors.get('assetName') != null}"
+             class="field-error" th:text="${errors.get('assetName')}"></div>
+        <input type="text" id="assetName" th:field="*{assetName}"
+               th:classappend="${errors != null and errors.get('assetName') != null} ? 'invalid' : ''"/>
+    </div>
+
+    <div class="form-row">
+        <label for="assetType">資産種別</label>
+        <div th:if="${errors != null and errors.get('assetType') != null}"
+             class="field-error" th:text="${errors.get('assetType')}"></div>
+        <select id="assetType" th:field="*{assetType}"
+                th:classappend="${errors != null and errors.get('assetType') != null} ? 'invalid' : ''">
+            <option value="">選択してください</option>
+            <option th:each="type : ${assetTypes}" th:value="${type}" th:text="${type.label}"></option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="initialBalance">初期残高</label>
+        <div th:if="${errors != null and errors.get('initialBalance') != null}"
+             class="field-error" th:text="${errors.get('initialBalance')}"></div>
+        <input type="number" id="initialBalance" th:field="*{initialBalance}" min="0" step="1"
+               th:classappend="${errors != null and errors.get('initialBalance') != null} ? 'invalid' : ''"/>
+    </div>
+
+    <button type="submit">登録</button>
+</form>
+
+<p><a th:href="@{/assets}">キャンセル</a></p>
+
+</div>
+</body>
+</html>

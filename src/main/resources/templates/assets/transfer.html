@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>資産間振替</title>
+    <link rel="stylesheet" th:href="@{/css/error-message.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+<body>
+<div class="wide-card">
+<h1>資産間振替</h1>
+
+<form th:action="@{/assets/transfer}" th:object="${transferForm}" method="post">
+
+    <div class="form-row">
+        <label for="fromAssetId">振替元資産</label>
+        <div th:if="${errors != null and errors.get('fromAssetId') != null}"
+             class="field-error" th:text="${errors.get('fromAssetId')}"></div>
+        <select id="fromAssetId" th:field="*{fromAssetId}"
+                th:classappend="${errors != null and errors.get('fromAssetId') != null} ? 'invalid' : ''">
+            <option value="">選択してください</option>
+            <option th:each="asset : ${assets}" th:value="${asset.assetId}" th:text="${asset.assetName}"></option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="toAssetId">振替先資産</label>
+        <div th:if="${errors != null and errors.get('toAssetId') != null}"
+             class="field-error" th:text="${errors.get('toAssetId')}"></div>
+        <select id="toAssetId" th:field="*{toAssetId}"
+                th:classappend="${errors != null and errors.get('toAssetId') != null} ? 'invalid' : ''">
+            <option value="">選択してください</option>
+            <option th:each="asset : ${assets}" th:value="${asset.assetId}" th:text="${asset.assetName}"></option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="amount">金額</label>
+        <div th:if="${errors != null and errors.get('amount') != null}"
+             class="field-error" th:text="${errors.get('amount')}"></div>
+        <input type="number" id="amount" th:field="*{amount}" min="1" step="1"
+               th:classappend="${errors != null and errors.get('amount') != null} ? 'invalid' : ''"/>
+    </div>
+
+    <div class="form-row">
+        <label for="transferDate">日付</label>
+        <div th:if="${errors != null and errors.get('transferDate') != null}"
+             class="field-error" th:text="${errors.get('transferDate')}"></div>
+        <input type="date" id="transferDate" th:field="*{transferDate}"
+               th:classappend="${errors != null and errors.get('transferDate') != null} ? 'invalid' : ''"/>
+    </div>
+
+    <div class="form-row">
+        <label for="memo">メモ</label>
+        <input type="text" id="memo" th:field="*{memo}"/>
+    </div>
+
+    <button type="submit">登録</button>
+</form>
+
+<p><a th:href="@{/assets}">キャンセル</a></p>
+
+</div>
+</body>
+</html>

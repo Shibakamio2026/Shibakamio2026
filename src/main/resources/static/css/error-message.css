@@ -1,0 +1,73 @@
+/* 入力欄の上に赤いポップでエラー文を表示するための共通スタイル */
+/* 資産管理モジュール（asset-module）にある同名ファイルと同一内容です。
+   実リポジトリには1つだけ存在すればよいので、統合時はどちらか一方を残してください。 */
+
+.field-error {
+    display: inline-block;
+    position: relative;
+    background-color: #e53935;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.field-error::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 14px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #e53935 transparent transparent transparent;
+}
+
+.form-row {
+    margin-bottom: 16px;
+}
+
+.form-row label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.form-row input.invalid,
+.form-row select.invalid {
+    border: 1px solid #e53935;
+}
+
+.success-message {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.error-banner {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.empty-message {
+    color: #666666;
+    padding: 16px;
+}
+
+.danger-zone {
+    margin-top: 32px;
+    padding: 16px;
+    border: 1px solid #e53935;
+    border-radius: 4px;
+}
+
+.danger-zone a,
+.danger-zone button {
+    color: #c62828;
+}
