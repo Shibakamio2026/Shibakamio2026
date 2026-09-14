@@ -22,77 +22,79 @@
 		</nav>
 	</header>
 	<main>
-		<h1>収支一覧</h1>
+		<div class="transaction-list-card">
+			<h1>収支一覧</h1>
 
-		<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
+			<div th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></div>
 
-		<form th:action="@{/transactions/list}" method="get">
-			<div>
-				<label>期間（開始）</label>
-				<input type="date" name="from" th:value="${from}">
-			</div>
-			<div>
-				<label>期間（終了）</label>
-				<input type="date" name="to" th:value="${to}">
-			</div>
-			<div>
-				<label>カテゴリー</label>
-				<select name="categoryId">
-					<option value="">すべて</option>
-					<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"
-						th:selected="${c.categoryId == categoryId}"></option>
-				</select>
-			</div>
-			<div>
-				<label>資産</label>
-				<select name="assetId">
-					<option value="">すべて</option>
-					<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"
-						th:selected="${a.assetId == assetId}"></option>
-				</select>
-			</div>
-			<div>
-				<label>取引種別</label>
-				<select name="transactionType">
-					<option value="">すべて</option>
-					<option value="INCOME"
-						th:selected="${transactionType != null and transactionType.name() == 'INCOME'}">
-						収入</option>
-					<option value="EXPENSE"
-						th:selected="${transactionType != null and transactionType.name() == 'EXPENSE'}">支出</option>
-				</select>
-			</div>
-			<button type="submit">絞り込む</button>
-		</form>
+			<form th:action="@{/transactions/list}" method="get">
+				<div>
+					<label>期間（開始）</label>
+					<input type="date" name="from" th:value="${from}">
+				</div>
+				<div>
+					<label>期間（終了）</label>
+					<input type="date" name="to" th:value="${to}">
+				</div>
+				<div>
+					<label>カテゴリー</label>
+					<select name="categoryId">
+						<option value="">すべて</option>
+						<option th:each="c : ${categories}" th:value="${c.categoryId}" th:text="${c.categoryName}"
+							th:selected="${c.categoryId == categoryId}"></option>
+					</select>
+				</div>
+				<div>
+					<label>資産</label>
+					<select name="assetId">
+						<option value="">すべて</option>
+						<option th:each="a : ${assets}" th:value="${a.assetId}" th:text="${a.assetName}"
+							th:selected="${a.assetId == assetId}"></option>
+					</select>
+				</div>
+				<div>
+					<label>取引種別</label>
+					<select name="transactionType">
+						<option value="">すべて</option>
+						<option value="INCOME"
+							th:selected="${transactionType != null and transactionType.name() == 'INCOME'}">
+							収入</option>
+						<option value="EXPENSE"
+							th:selected="${transactionType != null and transactionType.name() == 'EXPENSE'}">支出</option>
+					</select>
+				</div>
+				<button type="submit">絞り込む</button>
+			</form>
 
-		<table th:if="${!transactions.isEmpty()}">
-			<thead>
-				<tr>
-					<th>取引日</th>
-					<th>種別</th>
-					<th>カテゴリー</th>
-					<th>資産</th>
-					<th>金額</th>
-					<th>メモ</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="t : ${transactions}">
-					<td th:text="${t.transactionDate}"></td>
-					<td th:text="${t.transactionType.name() == 'INCOME'} ? '収入' : '支出'"></td>
-					<td th:text="${t.category.categoryName}"></td>
-					<td th:text="${t.asset.assetName}"></td>
-					<td th:text="${t.amount}"></td>
-					<td th:text="${t.memo}"></td>
-					<td><a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}">編集</a></td>
-				</tr>
-			</tbody>
-		</table>
+			<table th:if="${!transactions.isEmpty()}">
+				<thead>
+					<tr>
+						<th>取引日</th>
+						<th>種別</th>
+						<th>カテゴリー</th>
+						<th>資産</th>
+						<th>金額</th>
+						<th>メモ</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="t : ${transactions}">
+						<td th:text="${t.transactionDate}"></td>
+						<td th:text="${t.transactionType.name() == 'INCOME'} ? '収入' : '支出'"></td>
+						<td th:text="${t.category.categoryName}"></td>
+						<td th:text="${t.asset.assetName}"></td>
+						<td th:text="${t.amount}"></td>
+						<td th:text="${t.memo}"></td>
+						<td><a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}">編集</a></td>
+					</tr>
+				</tbody>
+			</table>
 
-		<p th:if="${transactions.isEmpty()}">データがありません</p>
+			<p th:if="${transactions.isEmpty()}">データがありません</p>
 
-		<p><a th:href="@{/home}">ホームへ戻る</a></p>
+			<p><a th:href="@{/home}">ホームへ戻る</a></p>
+		</div>
 	</main>
 
 	<footer class="site-footer">

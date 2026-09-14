@@ -51,7 +51,7 @@ body {
 	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
 	padding: 32px;
 	width: 100%;
-	max-width: 900px;
+	max-width: 950px;
 	margin: 0 auto;
 }
 
@@ -61,6 +61,25 @@ body {
 }
 
 .list-page-card>p:first-of-type {
+	text-align: center;
+}
+
+.calender-card {
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 32px;
+	width: 100%;
+	max-width: 420px;
+	margin: 0 auto;
+}
+
+.calender-card h1 {
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+.calender-card>p:first-of-type {
 	text-align: center;
 }
 
@@ -349,10 +368,25 @@ h1 {
 	padding: 32px;
 	width: 100%;
 	max-width: 420px;
-	margin: 0;
+	margin: 0 auto;
 }
 
 .transaction-card {
+	background: var(--color-card-bg);
+	border-radius: var(--radius);
+	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
+	padding: 32px;
+	width: 100%;
+	max-width: 650px;
+	margin: 0 auto;
+}
+
+.transaction-card p {
+	text-align: center;
+	margin-top: 16px;
+}
+
+.transaction-list-card {
 	background: var(--color-card-bg);
 	border-radius: var(--radius);
 	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
@@ -390,10 +424,33 @@ body>.site-footer {
 	width: auto;
 }
 
+body>.list-page-card {
+	width: 100%;
+	max-width: none;
+}
+
+body>main {
+	width: 100%;
+	max-width: none;
+}
+
 table {
 	max-width: 100%;
 	width: 100%;
-	margin: 0 auto;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+th,
+td {
+	text-align: center;
+	padding: 8px 4px;
+	vertical-align: top;
+}
+
+.page-nav-links {
+	text-align: center;
+	margin-top: 12px;
 }
 
 /* フォーム部品 */
