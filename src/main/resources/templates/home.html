@@ -39,68 +39,97 @@
 				</section>
 
 				<section class="main-columns">
-					<!-- ===== 左：資産推移 / 月間収支 タブ ===== -->
-					<div class="chart-card">
+
+					<!-- 資産推移 / 月刊収支（タブ切り替えはCSSのみ。JSなし） -->
+					<div class="chart-card chart-tabs">
+						<input type="radio" name="dashboardChartTab" id="tab-assets" checked>
+						<input type="radio" name="dashboardChartTab" id="tab-monthly">
+
 						<div class="tab-buttons">
-							<button type="button" class="active" data-tab="assetTrend">資産推移</button>
-							<button type="button" data-tab="monthlyBalance">月間収支</button>
+							<label for="tab-assets">資産推移</label>
+							<label for="tab-monthly">月刊収支</label>
 						</div>
 
-						<!-- 資産推移：各月末時点の総資産残高 -->
-						<div class="tab-panel" id="tab-assetTrend">
-							<div class="bar-chart">
-								<div class="bar-group" th:each="p : ${assetTrend}">
-									<div class="bar-stack">
-										<div class="bar bar-asset" th:style="'height:' + ${p.percent} + '%'"
-											th:title="${p.label} + ' ¥' + ${#numbers.formatInteger(p.value, 0, 'COMMA')}">
+						<!-- 資産推移：各月末時点の総資産額 -->
+						<div class="tab-panel panel-assets">
+							<div th:if="${hasAssetData}">
+								<div class="mini-chart">
+									<div class="mini-group" th:each="p : ${monthPoints}">
+										<div class="mini-bars">
+											<div class="mini-bar bar-balance"
+												th:style="'height:' + ${p.balancePercent} + '%'"
+												th:title="${p.label} + '末 ¥' + ${#numbers.formatInteger(p.endBalance, 0, 'COMMA')}">
+											</div>
 										</div>
+										<div class="mini-label" th:text="${p.label}"></div>
 									</div>
-									<div class="bar-label" th:text="${p.label}"></div>
 								</div>
+								<p class="chart-note">
+									各月末時点の総資産額（直近<span th:text="${chartMonths}"></span>か月）
+								</p>
 							</div>
-							<p class="chart-note">各月末時点の総資産残高</p>
-						</div>
-
-						<!-- 月間収支：確定済みの収入・支出 -->
-						<div class="tab-panel is-hidden" id="tab-monthlyBalance">
-							<div class="bar-chart">
-								<div class="bar-group" th:each="m : ${monthlySummaries}">
-									<div class="bar-stack is-pair">
-										<div class="bar bar-income" th:style="'height:' + ${m.incomeBarPercent} + '%'"
-											th:title="'収入 ¥' + ${#numbers.formatInteger(m.confirmedIncome, 0, 'COMMA')}">
-										</div>
-										<div class="bar bar-expense" th:style="'height:' + ${m.expenseBarPercent} + '%'"
-											th:title="'支出 ¥' + ${#numbers.formatInteger(m.confirmedExpense, 0, 'COMMA')}">
-										</div>
-									</div>
-									<div class="bar-label" th:text="${#strings.substring(m.yearMonth, 5)} + '月'"></div>
-								</div>
-							</div>
-							<p class="chart-legend">
-								<span class="legend-dot bar-income"></span>収入
-								<span class="legend-dot bar-expense"></span>支出
+							<p class="placeholder-note" th:unless="${hasAssetData}">
+								資産が登録されていません。<a th:href="@{/assets}">資産を登録する →</a>
 							</p>
 						</div>
+
+						<!-- 月刊収支：確定済みの収入・支出 -->
+						<div class="tab-panel panel-monthly">
+							<div th:if="${hasMonthlyData}">
+								<p class="chart-legend">
+									<span class="legend-item is-income">収入</span>
+									<span class="legend-item is-expense">支出</span>
+								</p>
+								<div class="mini-chart">
+									<div class="mini-group" th:each="p : ${monthPoints}">
+										<div class="mini-bars">
+											<div class="mini-bar bar-income"
+												th:style="'height:' + ${p.incomePercent} + '%'"
+												th:title="${p.label} + ' 収入 ¥' + ${#numbers.formatInteger(p.income, 0, 'COMMA')}">
+											</div>
+											<div class="mini-bar bar-expense"
+												th:style="'height:' + ${p.expensePercent} + '%'"
+												th:title="${p.label} + ' 支出 ¥' + ${#numbers.formatInteger(p.expense, 0, 'COMMA')}">
+											</div>
+										</div>
+										<div class="mini-label" th:text="${p.label}"></div>
+									</div>
+								</div>
+								<p class="chart-note">
+									確定済みの収入・支出（直近<span th:text="${chartMonths}"></span>か月）
+								</p>
+							</div>
+							<p class="placeholder-note" th:unless="${hasMonthlyData}">
+								直近<span th:text="${chartMonths}"></span>か月の取引がありません。
+								<a th:href="@{/transactions/input}">収支を記録する →</a>
+							</p>
+						</div>
+
+						<p class="chart-more"><a th:href="@{/reports}">分析・レポートで詳しく見る →</a></p>
 					</div>
 
-					<!-- ===== 右：今月の支出内訳（円グラフ） ===== -->
+					<!-- 今月の支出内訳 -->
 					<div class="chart-card">
 						<h3>今月の支出内訳</h3>
 
-						<div class="pie-wrap" th:if="${!expensePie.isEmpty()}">
-							<div class="pie" th:style="'background: conic-gradient(' + ${expensePieGradient} + ')'">
-							</div>
+						<div class="pie-wrap" th:unless="${expenseSlices.isEmpty()}">
+							<div class="pie"
+								th:style="'background: conic-gradient(' + ${expensePieGradient} + ');'"></div>
 							<ul class="pie-legend">
-								<li th:each="s : ${expensePie}">
-									<span class="legend-dot" th:style="'background-color:' + ${s.color}"></span>
-									<span class="legend-name" th:text="${s.label}"></span>
-									<span class="legend-value" th:text="'¥' + ${#numbers.formatInteger(s.amount, 0, 'COMMA')}
+								<li th:each="s : ${expenseSlices}">
+									<span class="pie-dot" th:style="'background-color:' + ${s.color} + ';'"></span>
+									<span class="pie-name" th:text="${s.name}"></span>
+									<span class="pie-value"
+										th:text="'¥' + ${#numbers.formatInteger(s.amount, 0, 'COMMA')}
 										        + '（' + ${#numbers.formatDecimal(s.percent, 1, 1)} + '%）'"></span>
 								</li>
 							</ul>
 						</div>
 
-						<p class="placeholder-note" th:if="${expensePie.isEmpty()}">今月の支出データがまだありません</p>
+						<p class="placeholder-note" th:if="${expenseSlices.isEmpty()}">
+							今月の支出がまだありません。
+							<a th:href="@{/transactions/input}">収支を記録する →</a>
+						</p>
 					</div>
 				</section>
 
@@ -146,23 +175,6 @@
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
-
-	<script>
-		// グラフのタブ切り替え
-		document.querySelectorAll('.tab-buttons button[data-tab]').forEach(function (btn) {
-			btn.addEventListener('click', function () {
-				var card = btn.closest('.chart-card');
-				card.querySelectorAll('.tab-buttons button').forEach(function (b) {
-					b.classList.remove('active');
-				});
-				card.querySelectorAll('.tab-panel').forEach(function (p) {
-					p.classList.add('is-hidden');
-				});
-				btn.classList.add('active');
-				card.querySelector('#tab-' + btn.dataset.tab).classList.remove('is-hidden');
-			});
-		});
-	</script>
 </body>
 
 </html>

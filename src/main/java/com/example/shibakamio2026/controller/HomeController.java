@@ -10,16 +10,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.example.shibakamio2026.dto.CategorySummary;
-import com.example.shibakamio2026.dto.ChartPointView;
-import com.example.shibakamio2026.dto.MonthlySummary;
-import com.example.shibakamio2026.dto.PieSliceView;
+import com.example.shibakamio2026.dto.DashboardCategorySlice;
+import com.example.shibakamio2026.dto.DashboardMonthPoint;
 import com.example.shibakamio2026.entity.Asset;
 import com.example.shibakamio2026.entity.ScheduledTransaction;
 import com.example.shibakamio2026.entity.Transaction;
@@ -30,34 +29,33 @@ import com.example.shibakamio2026.repository.AssetRepository;
 import com.example.shibakamio2026.repository.ScheduledTransactionRepository;
 import com.example.shibakamio2026.repository.TransactionRepository;
 import com.example.shibakamio2026.repository.UserRepository;
-import com.example.shibakamio2026.service.ReportService;
 
 @Controller
 public class HomeController {
 
-	/** グラフの表示月数（当月を含む直近Nか月） */
+	/** グラフの表示期間（当月を含む直近Nか月） */
 	private static final int CHART_MONTHS = 6;
 
-	/** 円グラフの色パレット。カテゴリー数がこれを超えたら先頭から使い回す。 */
+	/** 円グラフに個別表示するカテゴリー数。これを超えた分は「その他」にまとめる */
+	private static final int PIE_MAX_SLICES = 5;
+
+	/** 円グラフの配色 */
 	private static final List<String> PIE_COLORS = List.of(
-			"#4caf7d", "#ffa94d", "#e05c5c", "#6aa9e0", "#b08ce0", "#e0c14c", "#5ec8b8", "#e08cb0");
+			"#4caf7d", "#7fd0a5", "#ffa94d", "#e05c5c", "#6fa8dc", "#b0bfb7");
 
 	private final UserRepository userRepository;
 	private final AssetRepository assetRepository;
 	private final TransactionRepository transactionRepository;
 	private final ScheduledTransactionRepository scheduledTransactionRepository;
-	private final ReportService reportService;
 
 	public HomeController(UserRepository userRepository,
 			AssetRepository assetRepository,
 			TransactionRepository transactionRepository,
-			ScheduledTransactionRepository scheduledTransactionRepository,
-			ReportService reportService) {
+			ScheduledTransactionRepository scheduledTransactionRepository) {
 		this.userRepository = userRepository;
 		this.assetRepository = assetRepository;
 		this.transactionRepository = transactionRepository;
 		this.scheduledTransactionRepository = scheduledTransactionRepository;
-		this.reportService = reportService;
 	}
 
 	@GetMapping("/home")
@@ -109,20 +107,6 @@ public class HomeController {
 
 		BigDecimal projectedBalance = totalAssetBalance.add(scheduledNet);
 
-		// ===== グラフ用データ =====
-		YearMonth fromMonth = currentMonth.minusMonths(CHART_MONTHS - 1);
-
-		// ① 資産推移：各月末時点の総資産残高
-		List<ChartPointView> assetTrend = buildAssetTrend(assets, allTransactions, fromMonth, currentMonth);
-
-		// ② 月間収支：確定済みの収入・支出（ReportServiceが月ごとの棒の高さ%まで計算済み）
-		List<MonthlySummary> monthlySummaries = reportService.getMonthlySummaries(
-				user.getUserId(), fromMonth, currentMonth);
-
-		// ③ 今月の支出内訳（円グラフ）
-		List<PieSliceView> expensePie = buildExpensePie(
-				reportService.getCategorySummaries(user.getUserId(), currentMonth, currentMonth));
-
 		model.addAttribute("userName", user.getUserName());
 		model.addAttribute("totalAssetBalance", totalAssetBalance);
 		model.addAttribute("monthlyIncome", monthlyIncome);
@@ -133,105 +117,173 @@ public class HomeController {
 		model.addAttribute("scheduledCount", plannedThisMonth.size());
 		model.addAttribute("scheduledNet", scheduledNet);
 
-		model.addAttribute("assetTrend", assetTrend);
-		model.addAttribute("monthlySummaries", monthlySummaries);
-		model.addAttribute("expensePie", expensePie);
-		model.addAttribute("expensePieGradient", buildPieGradient(expensePie));
+		// ------------------------------------------------------------
+		// グラフ用データ（資産推移 / 月刊収支 / 今月の支出内訳）
+		// ------------------------------------------------------------
+		List<DashboardMonthPoint> monthPoints = buildMonthPoints(allTransactions, totalAssetBalance, currentMonth);
+		boolean hasMonthlyData = monthPoints.stream()
+				.anyMatch(p -> p.getIncome().signum() != 0 || p.getExpense().signum() != 0);
+
+		List<DashboardCategorySlice> expenseSlices = buildExpenseSlices(allTransactions, currentMonth);
+
+		model.addAttribute("monthPoints", monthPoints);
+		model.addAttribute("hasMonthlyData", hasMonthlyData);
+		model.addAttribute("hasAssetData", !assets.isEmpty());
+		model.addAttribute("expenseSlices", expenseSlices);
+		model.addAttribute("expensePieGradient", buildPieGradient(expenseSlices));
+		model.addAttribute("chartMonths", CHART_MONTHS);
 
 		return "home";
 	}
 
-	/** 各月末時点の総資産残高を計算する。取引が0件でも月は並ぶ（0円として表示）。 */
-	private List<ChartPointView> buildAssetTrend(List<Asset> assets,
-			List<Transaction> allTransactions,
-			YearMonth from,
-			YearMonth to) {
+	/** 直近CHART_MONTHSか月分の、月別収支と月末時点の総資産額を組み立てる。 */
+	private List<DashboardMonthPoint> buildMonthPoints(List<Transaction> allTransactions,
+			BigDecimal totalAssetBalance,
+			YearMonth currentMonth) {
 
-		BigDecimal initialTotal = assets.stream()
-				.map(Asset::getInitialBalance)
-				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		YearMonth firstMonth = currentMonth.minusMonths(CHART_MONTHS - 1L);
 
-		List<ChartPointView> points = new ArrayList<>();
-		YearMonth cursor = from;
-		while (!cursor.isAfter(to)) {
-			LocalDate monthEnd = cursor.atEndOfMonth();
-			BigDecimal balance = initialTotal;
-			for (Transaction t : allTransactions) {
-				if (!t.getTransactionDate().isAfter(monthEnd)) {
-					balance = t.getTransactionType() == TransactionType.INCOME
-							? balance.add(t.getAmount())
-							: balance.subtract(t.getAmount());
-				}
-			}
-			points.add(new ChartPointView(cursor.getMonthValue() + "月", balance, 0d));
-			cursor = cursor.plusMonths(1);
+		Map<YearMonth, BigDecimal[]> byMonth = new LinkedHashMap<>();
+		for (YearMonth m = firstMonth; !m.isAfter(currentMonth); m = m.plusMonths(1)) {
+			byMonth.put(m, new BigDecimal[] { BigDecimal.ZERO, BigDecimal.ZERO });
 		}
 
-		BigDecimal max = points.stream()
-				.map(p -> p.getValue().abs())
+		for (Transaction t : allTransactions) {
+			BigDecimal[] slot = byMonth.get(YearMonth.from(t.getTransactionDate()));
+			if (slot == null) {
+				continue;
+			}
+			if (t.getTransactionType() == TransactionType.INCOME) {
+				slot[0] = slot[0].add(t.getAmount());
+			} else {
+				slot[1] = slot[1].add(t.getAmount());
+			}
+		}
+
+		// 月末時点の総資産額は、現在の残高からその月末より後の取引を差し引いて逆算する
+		Map<YearMonth, BigDecimal> endBalances = new LinkedHashMap<>();
+		for (YearMonth m : byMonth.keySet()) {
+			final LocalDate endOfMonth = m.atEndOfMonth();
+			BigDecimal afterMonth = allTransactions.stream()
+					.filter(t -> t.getTransactionDate().isAfter(endOfMonth))
+					.map(t -> t.getTransactionType() == TransactionType.INCOME
+							? t.getAmount()
+							: t.getAmount().negate())
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
+			endBalances.put(m, totalAssetBalance.subtract(afterMonth));
+		}
+
+		BigDecimal maxAmount = byMonth.values().stream()
+				.flatMap(a -> Stream.of(a[0], a[1]))
 				.max(Comparator.naturalOrder())
 				.orElse(BigDecimal.ZERO);
 
-		for (ChartPointView p : points) {
-			p.setPercent(percentOf(p.getValue().max(BigDecimal.ZERO), max));
+		// 残高はマイナスにもなり得るので、絶対値の最大で正規化する
+		BigDecimal maxBalance = endBalances.values().stream()
+				.map(BigDecimal::abs)
+				.max(Comparator.naturalOrder())
+				.orElse(BigDecimal.ZERO);
+
+		List<DashboardMonthPoint> points = new ArrayList<>();
+		for (Map.Entry<YearMonth, BigDecimal[]> e : byMonth.entrySet()) {
+			YearMonth m = e.getKey();
+			BigDecimal income = e.getValue()[0];
+			BigDecimal expense = e.getValue()[1];
+			BigDecimal balance = endBalances.get(m);
+
+			points.add(new DashboardMonthPoint(
+					m.getMonthValue() + "月",
+					income,
+					expense,
+					balance,
+					percentOf(income, maxAmount),
+					percentOf(expense, maxAmount),
+					percentOf(balance.max(BigDecimal.ZERO), maxBalance)));
 		}
 		return points;
 	}
 
-	/** カテゴリー別集計から、支出だけを取り出して割合を計算する。 */
-	private List<PieSliceView> buildExpensePie(List<CategorySummary> categories) {
-		List<CategorySummary> expenses = categories.stream()
-				.filter(c -> "EXPENSE".equals(c.getTransactionType()))
-				.sorted(Comparator.comparing(CategorySummary::getAmount).reversed())
+	/** 今月の確定支出をカテゴリー別に集計し、上位PIE_MAX_SLICES件＋「その他」にまとめる。 */
+	private List<DashboardCategorySlice> buildExpenseSlices(List<Transaction> allTransactions,
+			YearMonth currentMonth) {
+
+		Map<String, BigDecimal> byCategory = new LinkedHashMap<>();
+		for (Transaction t : allTransactions) {
+			if (t.getTransactionType() != TransactionType.EXPENSE
+					|| !YearMonth.from(t.getTransactionDate()).equals(currentMonth)) {
+				continue;
+			}
+			String name = (t.getCategory() != null) ? t.getCategory().getCategoryName() : "未分類";
+			byCategory.merge(name, t.getAmount(), BigDecimal::add);
+		}
+
+		BigDecimal total = byCategory.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+		if (total.signum() <= 0) {
+			return List.of();
+		}
+
+		List<Map.Entry<String, BigDecimal>> sorted = byCategory.entrySet().stream()
+				.sorted(Map.Entry.<String, BigDecimal> comparingByValue().reversed())
 				.collect(Collectors.toList());
 
-		BigDecimal total = expenses.stream()
-				.map(CategorySummary::getAmount)
-				.reduce(BigDecimal.ZERO, BigDecimal::add);
+		List<DashboardCategorySlice> slices = new ArrayList<>();
+		BigDecimal others = BigDecimal.ZERO;
 
-		List<PieSliceView> slices = new ArrayList<>();
-		for (int i = 0; i < expenses.size(); i++) {
-			CategorySummary c = expenses.get(i);
-			slices.add(new PieSliceView(
-					c.getCategoryName(),
-					c.getAmount(),
-					percentOf(c.getAmount(), total),
-					PIE_COLORS.get(i % PIE_COLORS.size())));
+		for (int i = 0; i < sorted.size(); i++) {
+			if (i < PIE_MAX_SLICES) {
+				BigDecimal amount = sorted.get(i).getValue();
+				slices.add(new DashboardCategorySlice(
+						sorted.get(i).getKey(),
+						amount,
+						percentOf(amount, total),
+						PIE_COLORS.get(i % PIE_COLORS.size())));
+			} else {
+				others = others.add(sorted.get(i).getValue());
+			}
+		}
+
+		if (others.signum() > 0) {
+			slices.add(new DashboardCategorySlice(
+					"その他",
+					others,
+					percentOf(others, total),
+					PIE_COLORS.get(PIE_COLORS.size() - 1)));
 		}
 		return slices;
 	}
 
-	/** CSSの conic-gradient 用の文字列を組み立てる（例："#4caf7d 0% 40%, #ffa94d 40% 100%"）。 */
-	private String buildPieGradient(List<PieSliceView> slices) {
+	/** CSSの conic-gradient に渡す色指定の文字列を組み立てる。 */
+	private String buildPieGradient(List<DashboardCategorySlice> slices) {
 		if (slices.isEmpty()) {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
 		double cursor = 0d;
 		for (int i = 0; i < slices.size(); i++) {
-			PieSliceView s = slices.get(i);
+			DashboardCategorySlice s = slices.get(i);
+			// 端数で隙間ができないよう、最後の1切れは必ず100%で閉じる
 			double next = (i == slices.size() - 1) ? 100d : cursor + s.getPercent();
 			if (i > 0) {
 				sb.append(", ");
 			}
 			sb.append(s.getColor())
-					.append(' ').append(format(cursor)).append('%')
-					.append(' ').append(format(next)).append('%');
+					.append(' ').append(round2(cursor)).append('%')
+					.append(' ').append(round2(next)).append('%');
 			cursor = next;
 		}
 		return sb.toString();
 	}
 
-	private String format(double v) {
-		return BigDecimal.valueOf(v).setScale(2, RoundingMode.HALF_UP).toPlainString();
-	}
-
 	private double percentOf(BigDecimal value, BigDecimal max) {
-		if (max == null || max.compareTo(BigDecimal.ZERO) <= 0) {
+		if (value == null || max == null || max.signum() <= 0) {
 			return 0d;
 		}
 		return value.multiply(BigDecimal.valueOf(100))
 				.divide(max, 2, RoundingMode.HALF_UP)
 				.doubleValue();
+	}
+
+	private double round2(double value) {
+		return Math.round(value * 100d) / 100d;
 	}
 }

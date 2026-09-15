@@ -994,3 +994,35 @@ p {
 		width: 100%;
 	}
 }
+
+/* ==========================
+   ヘッダーのナビは絶対に消さない
+   （他のルールに負けないよう最後に強制指定）
+   ========================== */
+.site-header-nav {
+	display: flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+	align-items: center;
+	gap: 16px;
+	flex-shrink: 0;
+}
+
+.site-header-nav>* {
+	display: revert;
+	visibility: visible !important;
+}
+
+.site-header-nav .nav-record,
+.site-header-nav .nav-user {
+	display: inline-block !important;
+}
+
+.site-header-nav .nav-logout-form {
+	display: inline-block !important;
+}
+
+.site-header-nav .nav-logout-form button[type="submit"] {
+	display: inline-block !important;
+	width: auto !important;
+}
