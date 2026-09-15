@@ -94,7 +94,8 @@ public class PaymentImportController {
 	@PostMapping("/confirm")
 	public String confirm(@ModelAttribute CsvImportBatch csvImportBatch,
 			Authentication authentication,
-			HttpSession session) {
+			HttpSession session,
+			Model model) {
 
 		User user = currentUser(authentication);
 
@@ -114,6 +115,17 @@ public class PaymentImportController {
 			original.setChecked(edited.isChecked());
 			original.setCategoryId(edited.getCategoryId());
 			original.setSourceAssetId(edited.getSourceAssetId());
+		}
+
+		boolean missingSelection = originalRows.stream().anyMatch(r -> r.isChecked() &&
+				("CHARGE".equals(r.getCandidateType()) ? r.getSourceAssetId() == null : r.getCategoryId() == null));
+
+		if (missingSelection) {
+			model.addAttribute("errorMessage", "カテゴリーまたは振替元資産が未選択の行があります。すべて選択してください。");
+			model.addAttribute("csvImportBatch", csvImportBatch);
+			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
+			return "payments/import-preview";
 		}
 
 		Asset targetAsset = assetRepository.findById(assetId)
