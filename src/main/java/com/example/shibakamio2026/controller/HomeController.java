@@ -46,7 +46,7 @@ public class HomeController {
 		User user = userRepository.findByEmailIgnoreCase(authentication.getName())
 				.orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません"));
 
-		List<Asset> assets = assetRepository.findByUserAndActiveTrue(user);
+		List<Asset> assets = assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user);
 		List<Transaction> allTransactions = transactionRepository.findByAsset_UserOrderByTransactionDateDesc(user);
 
 		Map<Long, List<Transaction>> byAsset = allTransactions.stream()

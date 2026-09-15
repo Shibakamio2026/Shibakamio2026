@@ -53,7 +53,7 @@ public class PaymentImportController {
 	@GetMapping
 	public String form(Authentication authentication, Model model) {
 		User user = currentUser(authentication);
-		model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+		model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 		return "payments/import-form";
 	}
 
@@ -68,7 +68,7 @@ public class PaymentImportController {
 
 		if (file.isEmpty()) {
 			model.addAttribute("errorMessage", "CSVファイルを選択してください。");
-			model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "payments/import-form";
 		}
 
@@ -81,12 +81,12 @@ public class PaymentImportController {
 			batch.setRows(rows);
 
 			model.addAttribute("csvImportBatch", batch);
-			model.addAttribute("categories", categoryRepository.findByUserAndActiveTrue(user));
-			model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "payments/import-preview";
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", "CSVの読み込みに失敗しました: " + e.getMessage());
-			model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "payments/import-form";
 		}
 	}

@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.shibakamio2026.entity.Category;
+import com.example.shibakamio2026.entity.User;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+	List<Category> findByUserAndIsActiveTrueOrderByCategoryIdAsc(User user);
 
 	List<Category> findByUser_UserIdOrderByCategoryIdAsc(Long userId);
 

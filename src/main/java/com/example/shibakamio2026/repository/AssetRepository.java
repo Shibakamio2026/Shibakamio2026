@@ -9,8 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.shibakamio2026.entity.Asset;
+import com.example.shibakamio2026.entity.User;
 
 public interface AssetRepository extends JpaRepository<Asset, Long> {
+
+	List<Asset> findByUserAndIsActiveTrueOrderByAssetIdAsc(User user);
 
 	List<Asset> findByUser_UserIdOrderByAssetIdAsc(Long userId);
 

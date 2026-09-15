@@ -63,8 +63,8 @@ public class TransactionController {
 	public String inputForm(Authentication authentication, Model model) {
 		User user = currentUser(authentication);
 		model.addAttribute("transactionForm", new TransactionForm());
-		model.addAttribute("categories", categoryRepository.findByUserAndActiveTrue(user));
-		model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+		model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+		model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 		return "transactions/input";
 	}
 
@@ -112,8 +112,8 @@ public class TransactionController {
 
 		if (errors.length() > 0) {
 			model.addAttribute("errorMessage", errors.toString());
-			model.addAttribute("categories", categoryRepository.findByUserAndActiveTrue(user));
-			model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "transactions/input";
 		}
 
@@ -173,8 +173,8 @@ public class TransactionController {
 				.collect(Collectors.toList());
 
 		model.addAttribute("transactions", transactions);
-		model.addAttribute("categories", categoryRepository.findByUserAndActiveTrue(user));
-		model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+		model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+		model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 		model.addAttribute("from", from);
 		model.addAttribute("to", to);
 		model.addAttribute("categoryId", categoryId);
@@ -201,8 +201,8 @@ public class TransactionController {
 
 		model.addAttribute("transactionId", transactionId);
 		model.addAttribute("transactionEditForm", form);
-		model.addAttribute("categories", categoryRepository.findByUserAndActiveTrue(user));
-		model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+		model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+		model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 		return "transactions/edit";
 	}
 
@@ -236,8 +236,8 @@ public class TransactionController {
 		if (errors.length() > 0) {
 			model.addAttribute("errorMessage", errors.toString());
 			model.addAttribute("transactionId", transactionId);
-			model.addAttribute("categories", categoryRepository.findByUserAndActiveTrue(user));
-			model.addAttribute("assets", assetRepository.findByUserAndActiveTrue(user));
+			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "transactions/edit";
 		}
 
