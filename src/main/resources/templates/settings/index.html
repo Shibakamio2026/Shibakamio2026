@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>設定</title>
+    <link rel="stylesheet" th:href="@{/css/error-message.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+<body>
+<div class="wide-card">
+<h1>設定</h1>
+
+<ul>
+    <li><a th:href="@{/categories}">カテゴリー登録</a></li>
+    <li><a th:href="@{/settings/account}">アカウント管理</a></li>
+</ul>
+
+<p><a th:href="@{/home}">ホームへ戻る</a></p>
+
+</div>
+</body>
+</html>

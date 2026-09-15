@@ -43,7 +43,7 @@ public class HomeController {
 
 	@GetMapping("/home")
 	public String home(Authentication authentication, Model model) {
-		User user = userRepository.findByEmail(authentication.getName())
+		User user = userRepository.findByEmailIgnoreCase(authentication.getName())
 				.orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません"));
 
 		List<Asset> assets = assetRepository.findByUserAndActiveTrue(user);

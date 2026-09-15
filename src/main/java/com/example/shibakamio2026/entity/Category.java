@@ -13,14 +13,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * カテゴリーエンティティ。G10 カテゴリー登録 で使用する。
+ * 使用中のカテゴリーは削除せず無効化する（要件6.3）。
+ */
 @Entity
-@Table(name = "categories", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "category_name" }))
+@Table(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,7 +42,7 @@ public class Category {
 	private String categoryName;
 
 	@Column(name = "is_active", nullable = false)
-	private boolean active = true;
+	private Boolean isActive = true;
 
 	@Column(name = "created_at", nullable = false)
 	private OffsetDateTime createdAt;
@@ -52,6 +55,9 @@ public class Category {
 		OffsetDateTime now = OffsetDateTime.now();
 		this.createdAt = now;
 		this.updatedAt = now;
+		if (this.isActive == null) {
+			this.isActive = true;
+		}
 	}
 
 	@PreUpdate

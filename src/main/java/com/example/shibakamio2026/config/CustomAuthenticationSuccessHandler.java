@@ -19,8 +19,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 			Authentication authentication) throws IOException, ServletException {
 
 		// TODO: principal の型は UserDetailsService の実装クラスによって変わります
-		// 例: CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-		//     Long userId = userDetails.getUserId();
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		Long userId = userDetails.getUserId();
 
 		HttpSession session = request.getSession();
 		session.setAttribute("LOGIN_USER_ID", userId);

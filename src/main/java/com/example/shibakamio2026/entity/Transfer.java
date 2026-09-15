@@ -20,6 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 資産間振替エンティティ。G15 資産間振替 で使用する。
+ * 収入・支出（transactions）とは区別して管理する（要件9.3）。
+ */
 @Entity
 @Table(name = "transfers")
 @Getter
@@ -46,9 +50,11 @@ public class Transfer {
 	@Column(name = "transfer_date", nullable = false)
 	private LocalDate transferDate;
 
+	/** PayPay CSV取込（チャージ候補）から登録された場合の取引番号。手動登録時はnull。 */
 	@Column(name = "external_transaction_no")
 	private String externalTransactionNo;
 
+	/** CSV取込元の取引内容。手動登録時はnull。 */
 	@Column(name = "source_content")
 	private String sourceContent;
 

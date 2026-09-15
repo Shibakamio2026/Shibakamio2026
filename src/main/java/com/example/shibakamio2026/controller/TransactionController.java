@@ -52,7 +52,7 @@ public class TransactionController {
 	}
 
 	private User currentUser(Authentication authentication) {
-		return userRepository.findByEmail(authentication.getName())
+		return userRepository.findByEmailIgnoreCase(authentication.getName())
 				.orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません"));
 	}
 

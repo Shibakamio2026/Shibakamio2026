@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>月々のグラフ表示</title>
+    <link rel="stylesheet" th:href="@{/css/error-message.css}">
+    <link rel="stylesheet" th:href="@{/css/report.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+<body>
+<div class="wide-card">
+<h1>月々のグラフ表示</h1>
+
+<p class="error-banner" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+
+<p>
+    <a th:href="@{/reports}">分析・レポートへ戻る</a>
+    |
+    <a th:href="@{/home}">ホームへ戻る</a>
+</p>
+
+<div class="month-nav">
+    <a th:href="@{/reports/monthly(month=${prevMonth})}">&laquo; 前月</a>
+    <form th:action="@{/reports/monthly}" method="get" style="display:inline">
+        <input type="month" name="month" th:value="${targetMonth}"/>
+        <button type="submit">表示</button>
+    </form>
+    <a th:href="@{/reports/monthly(month=${nextMonth})}">次月 &raquo;</a>
+</div>
+
+<h2 th:text="${targetMonth} + ' の収支'"></h2>
+
+<p class="empty-message" th:if="${isEmpty}">データがありません</p>
+
+<div th:unless="${isEmpty}">
+
+    <table class="chart-table">
+        <thead>
+        <tr>
+            <th></th>
+            <th class="bar-cell">金額</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><span class="legend-dot income"></span>確定収入</td>
+            <td class="bar-cell">
+                <div class="bar-track">
+                    <div class="bar-fill income" th:style="'width:' + ${detail.summary.incomeBarPercent} + '%'"></div>
+                </div>
+                <span th:text="${detail.summary.confirmedIncome}"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><span class="legend-dot expense"></span>確定支出</td>
+            <td class="bar-cell">
+                <div class="bar-track">
+                    <div class="bar-fill expense" th:style="'width:' + ${detail.summary.expenseBarPercent} + '%'"></div>
+                </div>
+                <span th:text="${detail.summary.confirmedExpense}"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>確定差額</td>
+            <td th:text="${detail.summary.confirmedDifference}"></td>
+        </tr>
+        <tr>
+            <td><span class="legend-dot scheduled"></span>予定収入（未確定）</td>
+            <td th:text="${detail.summary.scheduledIncome}"></td>
+        </tr>
+        <tr>
+            <td><span class="legend-dot scheduled"></span>予定支出（未確定）</td>
+            <td th:text="${detail.summary.scheduledExpense}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>カテゴリー別（確定済み）</h3>
+    <table class="chart-table" th:unless="${#lists.isEmpty(detail.categories)}">
+        <thead>
+        <tr>
+            <th>カテゴリー</th>
+            <th>種別</th>
+            <th class="bar-cell">金額</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${detail.categories}">
+            <td th:text="${c.categoryName}"></td>
+            <td th:text="${c.transactionType == 'INCOME'} ? '収入' : '支出'"></td>
+            <td class="bar-cell">
+                <div class="bar-track">
+                    <div class="bar-fill" th:class="${c.transactionType == 'INCOME'} ? 'bar-fill income' : 'bar-fill expense'"
+                         th:style="'width:' + ${c.barPercent} + '%'"></div>
+                </div>
+                <span th:text="${c.amount}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3>資産残高</h3>
+    <table class="chart-table" th:unless="${#lists.isEmpty(detail.assetBalances)}">
+        <thead>
+        <tr>
+            <th>資産名</th>
+            <th>現在残高</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${detail.assetBalances}">
+            <td th:text="${a.assetName}"></td>
+            <td th:text="${a.currentBalance}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</div>
+</body>
+</html>
