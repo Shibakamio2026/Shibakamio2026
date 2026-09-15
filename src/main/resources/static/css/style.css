@@ -838,3 +838,159 @@ p {
 		min-width: 640px;
 	}
 }
+
+
+/* ==========================
+   ダッシュボードのグラフ
+   ========================== */
+.tab-panel.is-hidden {
+	display: none;
+}
+
+/* ===== 棒グラフ ===== */
+.bar-chart {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-around;
+	gap: 8px;
+	height: 160px;
+	padding: 8px 4px 0;
+	border-bottom: 1px solid #e3f1e9;
+}
+
+.bar-group {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+	min-width: 0;
+}
+
+.bar-stack {
+	flex: 1;
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 3px;
+}
+
+.bar {
+	width: 60%;
+	max-width: 28px;
+	min-height: 2px;
+	/* 0円でも存在が分かるように薄く残す */
+	border-radius: 4px 4px 0 0;
+	transition: filter 0.15s ease;
+}
+
+.bar-stack.is-pair .bar {
+	width: 45%;
+}
+
+.bar:hover {
+	filter: brightness(1.1);
+}
+
+.bar-asset {
+	background-color: var(--color-primary);
+}
+
+.bar-income {
+	background-color: var(--color-primary);
+}
+
+.bar-expense {
+	background-color: var(--color-error);
+}
+
+.bar-label {
+	margin-top: 6px;
+	font-size: 0.75rem;
+	color: var(--color-text-light);
+	white-space: nowrap;
+}
+
+.chart-note,
+.chart-legend {
+	margin-top: 10px;
+	font-size: 0.75rem;
+	color: var(--color-text-light);
+	text-align: center;
+}
+
+.legend-dot {
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	margin: 0 4px 0 10px;
+	vertical-align: middle;
+}
+
+.chart-legend .legend-dot:first-child {
+	margin-left: 0;
+}
+
+/* ===== 円グラフ ===== */
+.pie-wrap {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-top: 12px;
+}
+
+.pie {
+	width: 120px;
+	height: 120px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	/* 中央をくり抜いてドーナツにする */
+	-webkit-mask: radial-gradient(circle, transparent 46%, #000 47%);
+	mask: radial-gradient(circle, transparent 46%, #000 47%);
+}
+
+.pie-legend {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	flex: 1;
+	min-width: 0;
+}
+
+.pie-legend li {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.8rem;
+	padding: 3px 0;
+}
+
+.pie-legend .legend-dot {
+	margin: 0 4px 0 0;
+}
+
+.pie-legend .legend-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.pie-legend .legend-value {
+	color: var(--color-text-light);
+	white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+	.pie-wrap {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.pie-legend {
+		width: 100%;
+	}
+}
