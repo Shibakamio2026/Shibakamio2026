@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
 <head>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <title>カテゴリー登録</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <title>カテゴリー登録 - 家計ログ</title>
 </head>
 <body>
-<div class="wide-card">
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="dashboard-page">
+<div class="dashboard-layout">
+<aside th:replace="~{fragments/layout :: sidebar('settings')}"></aside>
+<div class="page-content">
+<div class="list-page-card">
 <h1>カテゴリー登録</h1>
 
 <p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
@@ -57,7 +64,7 @@
         <td th:text="${category.active} ? '有効' : '無効'"></td>
         <td th:text="${category.used} ? '使用中' : '未使用'"></td>
         <td>
-            <div class="row-actions">
+            <div class="km-actions">
                 <form th:if="${category.active}" th:action="@{/categories/{id}/deactivate(id=${category.categoryId})}"
                       method="post"
                       onsubmit="return confirm('このカテゴリーを無効化しますか？');">
@@ -76,5 +83,10 @@
 </table>
 
 </div>
+</div>
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>
