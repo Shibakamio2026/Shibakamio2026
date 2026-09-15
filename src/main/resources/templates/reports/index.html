@@ -1,107 +1,125 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
+
 <head>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <meta charset="UTF-8">
-    <title>分析・レポート</title>
-    <link rel="stylesheet" th:href="@{/css/error-message.css}">
-    <link rel="stylesheet" th:href="@{/css/report.css}">
-    <link rel="stylesheet" th:href="@{/css/layout.css}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<link rel="stylesheet" th:href="@{/css/error-message.css}">
+	<link rel="stylesheet" th:href="@{/css/report.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<title>分析・レポート - 家計ログ</title>
 </head>
+
 <body>
-<div class="wide-card">
-<h1>分析・レポート</h1>
+	<header th:replace="~{fragments/layout :: header}"></header>
 
-<p class="error-banner" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside th:replace="~{fragments/layout :: sidebar('reports')}"></aside>
+			<div class="page-content">
+				<div class="list-page-card">
+					<h1>分析・レポート</h1>
 
-<p><a th:href="@{/home}">ホームへ戻る</a></p>
+					<p class="error-banner" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
-<form th:action="@{/reports}" method="get" style="margin-bottom:24px;">
-    <label>開始月
-        <input type="month" name="from" th:value="${fromMonth}"/>
-    </label>
-    <label>終了月
-        <input type="month" name="to" th:value="${toMonth}"/>
-    </label>
-    <button type="submit">表示</button>
-</form>
+					<p><a th:href="@{/home}">ホームへ戻る</a></p>
 
-<p class="empty-message" th:if="${isEmpty}">データがありません</p>
+					<form th:action="@{/reports}" method="get" style="margin-bottom:24px;">
+						<label>開始月
+							<input type="month" name="from" th:value="${fromMonth}" />
+						</label>
+						<label>終了月
+							<input type="month" name="to" th:value="${toMonth}" />
+						</label>
+						<button type="submit">表示</button>
+					</form>
 
-<div th:unless="${isEmpty}">
+					<p class="empty-message" th:if="${isEmpty}">データがありません</p>
 
-    <h2>月ごとの収支（確定済み ／ 予定）</h2>
-    <p>
-        <span class="legend-dot income"></span>確定収入
-        <span class="legend-dot expense"></span>確定支出
-        <span class="legend-dot scheduled"></span>予定（未確定）
-    </p>
-    <table class="chart-table">
-        <thead>
-        <tr>
-            <th>月</th>
-            <th class="bar-cell">確定収入</th>
-            <th class="bar-cell">確定支出</th>
-            <th>確定差額</th>
-            <th>予定収入</th>
-            <th>予定支出</th>
-            <th>詳細</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="m : ${monthlySummaries}">
-            <td th:text="${m.yearMonth}"></td>
-            <td class="bar-cell">
-                <div class="bar-track">
-                    <div class="bar-fill income" th:style="'width:' + ${m.incomeBarPercent} + '%'"></div>
-                </div>
-                <span th:text="${m.confirmedIncome}"></span>
-            </td>
-            <td class="bar-cell">
-                <div class="bar-track">
-                    <div class="bar-fill expense" th:style="'width:' + ${m.expenseBarPercent} + '%'"></div>
-                </div>
-                <span th:text="${m.confirmedExpense}"></span>
-            </td>
-            <td th:text="${m.confirmedDifference}"></td>
-            <td th:text="${m.scheduledIncome}"></td>
-            <td th:text="${m.scheduledExpense}"></td>
-            <td><a th:href="@{/reports/monthly(month=${m.yearMonth})}">見る</a></td>
-        </tr>
-        </tbody>
-    </table>
+					<div th:unless="${isEmpty}">
 
-    <h2>カテゴリー別収支（確定済み）</h2>
-    <table class="chart-table" th:unless="${#lists.isEmpty(categorySummaries)}">
-        <thead>
-        <tr>
-            <th>カテゴリー</th>
-            <th>種別</th>
-            <th class="bar-cell">金額</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="c : ${categorySummaries}">
-            <td th:text="${c.categoryName}"></td>
-            <td th:text="${c.transactionType == 'INCOME'} ? '収入' : '支出'"></td>
-            <td class="bar-cell">
-                <div class="bar-track">
-                    <div class="bar-fill" th:class="${c.transactionType == 'INCOME'} ? 'bar-fill income' : 'bar-fill expense'"
-                         th:style="'width:' + ${c.barPercent} + '%'"></div>
-                </div>
-                <span th:text="${c.amount}"></span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+						<h2>月ごとの収支（確定済み ／ 予定）</h2>
+						<p>
+							<span class="legend-dot income"></span>確定収入
+							<span class="legend-dot expense"></span>確定支出
+							<span class="legend-dot scheduled"></span>予定（未確定）
+						</p>
+						<table class="chart-table">
+							<thead>
+								<tr>
+									<th>月</th>
+									<th class="bar-cell">確定収入</th>
+									<th class="bar-cell">確定支出</th>
+									<th>確定差額</th>
+									<th>予定収入</th>
+									<th>予定支出</th>
+									<th>詳細</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="m : ${monthlySummaries}">
+									<td th:text="${m.yearMonth}"></td>
+									<td class="bar-cell">
+										<div class="bar-track">
+											<div class="bar-fill income"
+												th:style="'width:' + ${m.incomeBarPercent} + '%'"></div>
+										</div>
+										<span th:text="${m.confirmedIncome}"></span>
+									</td>
+									<td class="bar-cell">
+										<div class="bar-track">
+											<div class="bar-fill expense"
+												th:style="'width:' + ${m.expenseBarPercent} + '%'"></div>
+										</div>
+										<span th:text="${m.confirmedExpense}"></span>
+									</td>
+									<td th:text="${m.confirmedDifference}"></td>
+									<td th:text="${m.scheduledIncome}"></td>
+									<td th:text="${m.scheduledExpense}"></td>
+									<td><a th:href="@{/reports/monthly(month=${m.yearMonth})}">見る</a></td>
+								</tr>
+							</tbody>
+						</table>
 
-    <p>
-        <a th:href="@{/api/reports/monthly-chart(from=${fromMonth},to=${toMonth})}" target="_blank">
-            このデータをJSONで見る
-        </a>
-    </p>
-</div>
+						<h2>カテゴリー別収支（確定済み）</h2>
+						<table class="chart-table" th:unless="${#lists.isEmpty(categorySummaries)}">
+							<thead>
+								<tr>
+									<th>カテゴリー</th>
+									<th>種別</th>
+									<th class="bar-cell">金額</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="c : ${categorySummaries}">
+									<td th:text="${c.categoryName}"></td>
+									<td th:text="${c.transactionType == 'INCOME'} ? '収入' : '支出'"></td>
+									<td class="bar-cell">
+										<div class="bar-track">
+											<div class="bar-fill"
+												th:class="${c.transactionType == 'INCOME'} ? 'bar-fill income' : 'bar-fill expense'"
+												th:style="'width:' + ${c.barPercent} + '%'"></div>
+										</div>
+										<span th:text="${c.amount}"></span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 
-</div>
+						<p>
+							<a th:href="@{/api/reports/monthly-chart(from=${fromMonth},to=${toMonth})}" target="_blank">
+								このデータをJSONで見る
+							</a>
+						</p>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
+
 </html>

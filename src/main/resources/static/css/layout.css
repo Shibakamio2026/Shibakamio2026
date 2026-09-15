@@ -1,60 +1,22 @@
-@charset "UTF-8";
-
-/* ==========================
-   資産管理・設定・レポート系ページ用の上書きスタイル
-   common.css の後に読み込むことで、表やグラフのある横広ページに
-   .wide-card クラスを使えるようにする。
-   （common.css の body>*:not(header){max-width:420px} を上書きする）
-   ========================== */
-
-.wide-card {
-    background: var(--color-card-bg, #ffffff);
-    border-radius: var(--radius, 16px);
-    box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-    padding: 32px;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
+.km-actions {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
 }
 
-/* common.css の "body直下の要素は420pxまで" という制限を、
-   wide-card自身には適用させない */
-body > .wide-card {
-    max-width: 1100px;
+.km-actions a {
+	display: inline-block;
 }
 
-.wide-card h1 {
-    text-align: left;
-    margin-bottom: 16px;
+.km-actions form {
+	width: auto;
+	margin: 0;
 }
 
-.wide-card table {
-    width: 100%;
-}
-
-/* 一覧画面の「操作」列（編集リンク・無効化/削除ボタンなど）を
-   中央に揃えて見た目を統一する。
-   common.css / style.css の button[type="submit"]{width:100%} を、
-   このクラスの範囲内だけ上書きする。 */
-.row-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.row-actions a {
-    display: inline-block;
-}
-
-.row-actions form {
-    width: auto;
-    margin: 0;
-}
-
-.row-actions button[type="submit"] {
-    width: auto;
-    min-width: 100px;
-    padding: 6px 20px;
-    margin: 0;
+.km-actions button[type="submit"] {
+	width: auto;
+	min-width: 100px;
+	padding: 6px 20px;
+	margin: 0;
 }

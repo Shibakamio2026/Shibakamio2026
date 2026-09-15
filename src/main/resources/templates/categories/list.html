@@ -1,80 +1,97 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
+
 <head>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <meta charset="UTF-8">
-    <title>カテゴリー登録</title>
-    <link rel="stylesheet" th:href="@{/css/error-message.css}">
-    <link rel="stylesheet" th:href="@{/css/layout.css}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<link rel="stylesheet" th:href="@{/css/error-message.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<title>カテゴリー登録 - 家計ログ</title>
 </head>
+
 <body>
-<div class="wide-card">
-<h1>カテゴリー登録</h1>
+	<header th:replace="~{fragments/layout :: header}"></header>
 
-<p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
-<p class="error-banner" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside th:replace="~{fragments/layout :: sidebar('settings')}"></aside>
+			<div class="page-content">
+				<div class="list-page-card">
+					<h1>カテゴリー登録</h1>
 
-<p><a th:href="@{/settings}">設定へ戻る</a></p>
+					<p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
+					<p class="error-banner" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
-<h2>新規カテゴリー登録</h2>
-<form th:action="@{/categories}" th:object="${categoryForm}" method="post">
-    <div class="form-row">
-        <label for="categoryName">カテゴリー名</label>
-        <div th:if="${errors != null and errors.get('categoryName') != null and editingCategoryId == null}"
-             class="field-error" th:text="${errors.get('categoryName')}"></div>
-        <input type="text" id="categoryName" th:field="*{categoryName}"
-               th:classappend="${errors != null and errors.get('categoryName') != null and editingCategoryId == null} ? 'invalid' : ''"/>
-        <button type="submit">登録</button>
-    </div>
-</form>
+					<p><a th:href="@{/settings}">設定へ戻る</a></p>
 
-<h2>登録済みカテゴリー</h2>
+					<h2>新規カテゴリー登録</h2>
+					<form th:action="@{/categories}" th:object="${categoryForm}" method="post">
+						<div class="form-row">
+							<label for="categoryName">カテゴリー名</label>
+							<div th:if="${errors != null and errors.get('categoryName') != null and editingCategoryId == null}"
+								class="field-error" th:text="${errors.get('categoryName')}"></div>
+							<input type="text" id="categoryName" th:field="*{categoryName}"
+								th:classappend="${errors != null and errors.get('categoryName') != null and editingCategoryId == null} ? 'invalid' : ''" />
+							<button type="submit">登録</button>
+						</div>
+					</form>
 
-<p class="empty-message" th:if="${#lists.isEmpty(categories)}">項目を追加してから利用できます</p>
+					<h2>登録済みカテゴリー</h2>
 
-<table th:unless="${#lists.isEmpty(categories)}" border="1" cellpadding="6" cellspacing="0">
-    <thead>
-    <tr>
-        <th>カテゴリー名</th>
-        <th>状態</th>
-        <th>使用状況</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="category : ${categories}">
-        <td>
-            <!-- 常時インライン編集：名称を変更して「保存」を押すと更新される -->
-            <form th:if="${category.active}" th:action="@{/categories/{id}/edit(id=${category.categoryId})}" method="post">
-                <div th:if="${errors != null and errors.get('categoryName') != null and editingCategoryId == category.categoryId}"
-                     class="field-error" th:text="${errors.get('categoryName')}"></div>
-                <input type="text" name="categoryName" th:value="${category.categoryName}" size="14"
-                       th:classappend="${errors != null and errors.get('categoryName') != null and editingCategoryId == category.categoryId} ? 'invalid' : ''"/>
-                <button type="submit">保存</button>
-            </form>
-            <span th:unless="${category.active}" th:text="${category.categoryName}"></span>
-        </td>
-        <td th:text="${category.active} ? '有効' : '無効'"></td>
-        <td th:text="${category.used} ? '使用中' : '未使用'"></td>
-        <td>
-            <div class="row-actions">
-                <form th:if="${category.active}" th:action="@{/categories/{id}/deactivate(id=${category.categoryId})}"
-                      method="post"
-                      onsubmit="return confirm('このカテゴリーを無効化しますか？');">
-                    <button type="submit">無効化</button>
-                </form>
+					<p class="empty-message" th:if="${#lists.isEmpty(categories)}">項目を追加してから利用できます</p>
 
-                <form th:if="${!category.used}" th:action="@{/categories/{id}/delete(id=${category.categoryId})}"
-                      method="post"
-                      onsubmit="return confirm('このカテゴリーを削除しますか？');">
-                    <button type="submit">削除</button>
-                </form>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+					<table th:unless="${#lists.isEmpty(categories)}" border="1" cellpadding="6" cellspacing="0">
+						<thead>
+							<tr>
+								<th>カテゴリー名</th>
+								<th>状態</th>
+								<th>使用状況</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="category : ${categories}">
+								<td>
+									<!-- 常時インライン編集：名称を変更して「保存」を押すと更新される -->
+									<form th:if="${category.active}"
+										th:action="@{/categories/{id}/edit(id=${category.categoryId})}" method="post">
+										<div th:if="${errors != null and errors.get('categoryName') != null and editingCategoryId == category.categoryId}"
+											class="field-error" th:text="${errors.get('categoryName')}"></div>
+										<input type="text" name="categoryName" th:value="${category.categoryName}"
+											size="14"
+											th:classappend="${errors != null and errors.get('categoryName') != null and editingCategoryId == category.categoryId} ? 'invalid' : ''" />
+										<button type="submit">保存</button>
+									</form>
+									<span th:unless="${category.active}" th:text="${category.categoryName}"></span>
+								</td>
+								<td th:text="${category.active} ? '有効' : '無効'"></td>
+								<td th:text="${category.used} ? '使用中' : '未使用'"></td>
+								<td>
+									<div class="km-actions">
+										<form th:if="${category.active}"
+											th:action="@{/categories/{id}/deactivate(id=${category.categoryId})}"
+											method="post" onsubmit="return confirm('このカテゴリーを無効化しますか？');">
+											<button type="submit">無効化</button>
+										</form>
 
-</div>
+										<form th:if="${!category.used}"
+											th:action="@{/categories/{id}/delete(id=${category.categoryId})}"
+											method="post" onsubmit="return confirm('このカテゴリーを削除しますか？');">
+											<button type="submit">削除</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
+
 </html>

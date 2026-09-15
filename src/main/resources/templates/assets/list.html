@@ -1,61 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
+
 <head>
-    <meta charset="UTF-8">
-    <title>口座・資産一覧</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/error-message.css}">
-    <link rel="stylesheet" th:href="@{/css/layout.css}">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<link rel="stylesheet" th:href="@{/css/error-message.css}">
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	<title>口座・資産一覧 - 家計ログ</title>
 </head>
+
 <body>
-<div class="wide-card">
-<h1>口座・資産一覧</h1>
+	<header th:replace="~{fragments/layout :: header}"></header>
 
-<p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside th:replace="~{fragments/layout :: sidebar('assets')}"></aside>
+			<div class="page-content">
+				<div class="list-page-card">
+					<h1>口座・資産一覧</h1>
 
-<p>
-    <a th:href="@{/assets/new}">新規資産登録</a>
-    |
-    <a th:href="@{/assets/transfer}">資産間振替</a>
-    |
-    <a th:href="@{/home}">ホームへ戻る</a>
-</p>
+					<p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
 
-<!-- 要件：表示対象の資産が存在しない場合は「項目を追加してから利用できます」と表示する -->
-<p class="empty-message" th:if="${isEmpty}">項目を追加してから利用できます</p>
+					<p>
+						<a th:href="@{/assets/new}">新規資産登録</a>
+						|
+						<a th:href="@{/assets/transfer}">資産間振替</a>
+						|
+						<a th:href="@{/home}">ホームへ戻る</a>
+					</p>
 
-<table th:unless="${isEmpty}" border="1" cellpadding="6" cellspacing="0">
-    <thead>
-    <tr>
-        <th>資産名</th>
-        <th>資産種別</th>
-        <th>現在残高</th>
-        <th>見込み残高</th>
-        <th>状態</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="asset : ${assets}">
-        <td th:text="${asset.assetName}"></td>
-        <td th:text="${asset.assetType.label}"></td>
-        <td th:text="${asset.currentBalance}"></td>
-        <td th:text="${asset.expectedBalance}"></td>
-        <td th:text="${asset.active} ? '有効' : '無効'"></td>
-        <td>
-            <div class="row-actions">
-                <a th:if="${asset.active}" th:href="@{/assets/{id}/edit(id=${asset.assetId})}">編集</a>
-                <form th:if="${asset.active}" th:action="@{/assets/{id}/deactivate(id=${asset.assetId})}"
-                      method="post"
-                      onsubmit="return confirm('この資産を無効化しますか？');">
-                    <button type="submit">無効化</button>
-                </form>
-            </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+					<!-- 要件：表示対象の資産が存在しない場合は「項目を追加してから利用できます」と表示する -->
+					<p class="empty-message" th:if="${isEmpty}">項目を追加してから利用できます</p>
 
-</div>
+					<table th:unless="${isEmpty}" border="1" cellpadding="6" cellspacing="0">
+						<thead>
+							<tr>
+								<th>資産名</th>
+								<th>資産種別</th>
+								<th>現在残高</th>
+								<th>見込み残高</th>
+								<th>状態</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="asset : ${assets}">
+								<td th:text="${asset.assetName}"></td>
+								<td th:text="${asset.assetType.label}"></td>
+								<td th:text="${asset.currentBalance}"></td>
+								<td th:text="${asset.expectedBalance}"></td>
+								<td th:text="${asset.active} ? '有効' : '無効'"></td>
+								<td>
+									<div class="km-actions">
+										<a th:if="${asset.active}"
+											th:href="@{/assets/{id}/edit(id=${asset.assetId})}">編集</a>
+										<form th:if="${asset.active}"
+											th:action="@{/assets/{id}/deactivate(id=${asset.assetId})}" method="post"
+											onsubmit="return confirm('この資産を無効化しますか？');">
+											<button type="submit">無効化</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
+
 </html>
