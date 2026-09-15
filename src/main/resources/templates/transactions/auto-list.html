@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+	<title>自動収支一覧 - 家計ログ</title>
+</head>
+
+<body>
+	<header class="site-header">
+		<a href="/home" class="app-logo">
+			<span>家計ログ</span>
+		</a>
+		<nav class="site-header-nav" sec:authorize="isAuthenticated()">
+			<a th:href="@{/transactions/input}" class="nav-record">＋収支を記録</a>
+			<span class="nav-user" sec:authentication="name"></span>
+			<form th:action="@{/logout}" method="post" class="nav-logout-form">
+				<button type="submit">ログアウト</button>
+			</form>
+		</nav>
+	</header>
+	<main class="dashboard-page">
+		<div class="dashboard-layout">
+			<aside class="sidebar">
+				<nav>
+					<a th:href="@{/home}">ホーム</a>
+					<a th:href="@{/transactions/input}">収支入力</a>
+					<a th:href="@{/assets}">口座・資産一覧</a>
+					<a th:href="@{/reports}">分析・レポート</a>
+					<a th:href="@{/transactions/auto}" class="active">自動収支一覧</a>
+					<a th:href="@{/transactions/scheduled}">予定収支確認</a>
+					<a th:href="@{/calendar}">カレンダー</a>
+					<a th:href="@{/settings}">設定</a>
+				</nav>
+			</aside>
+
+			<div class="page-content">
+				<div class="list-page-card">
+					<h1>自動収支一覧</h1>
+
+					<table th:if="${!autoTransactions.isEmpty()}">
+						<thead>
+							<tr>
+								<th>種別</th>
+								<th>カテゴリー</th>
+								<th>資産</th>
+								<th>金額</th>
+								<th>間隔</th>
+								<th>開始日</th>
+								<th>終了日</th>
+								<th>状態</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="a : ${autoTransactions}">
+								<td th:text="${a.transactionType.name() == 'INCOME'} ? '収入' : '支出'"></td>
+								<td th:text="${a.category.categoryName}"></td>
+								<td th:text="${a.asset.assetName}"></td>
+								<td th:text="${a.amount}"></td>
+								<td
+									th:text="${a.intervalType.name() == 'WEEKLY'} ? '毎週' : (${a.intervalType.name() == 'MONTHLY'} ? '毎月' : '毎年')">
+								</td>
+								<td th:text="${a.startDate}"></td>
+								<td th:text="${a.endDate} ?: '無期限'"></td>
+								<td th:text="${a.enabled} ? '有効' : '無効'"></td>
+								<td>
+									<form th:if="${a.enabled}"
+										th:action="@{/transactions/auto/{id}/disable(id=${a.autoTransactionId})}"
+										method="post" onsubmit="return confirm('この自動収支を停止しますか？未確定の予定もキャンセルされます。');">
+										<button type="submit">停止する</button>
+									</form>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<p th:if="${autoTransactions.isEmpty()}">登録されている自動収支はありません</p>
+
+					<p><a th:href="@{/transactions/scheduled}">予定収支確認画面へ</a></p>
+					<p><a th:href="@{/home}">ホームへ戻る</a></p>
+				</div>
+			</div>
+		</div>
+	</main>
+	<footer class="site-footer">
+		<p>&copy; 2026 Kakei Log</p>
+	</footer>
+</body>
+
+</html>
