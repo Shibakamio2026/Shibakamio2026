@@ -8,7 +8,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CsvImportRow {
+public class CsvImportRow implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private LocalDate transactionDate;
 	private BigDecimal withdrawalAmount;
