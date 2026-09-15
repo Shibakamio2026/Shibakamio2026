@@ -80,6 +80,19 @@ main {
 	max-width: 850px;
 }
 
+/* 収支一覧：行内の削除ボタン */
+.transaction-list-card td form {
+	display: inline;
+	margin: 0;
+}
+
+.transaction-list-card td form button[type="submit"] {
+	width: auto;
+	padding: 4px 10px;
+	margin: 0 0 0 8px;
+	font-size: 0.85rem;
+}
+
 .list-page-card {
 	max-width: 950px;
 }

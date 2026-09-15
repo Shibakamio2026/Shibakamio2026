@@ -57,6 +57,7 @@
 					</form>
 
 					<table th:if="${!transactions.isEmpty()}">
+						<!-- 変更後 -->
 						<thead>
 							<tr>
 								<th>取引日</th>
@@ -65,7 +66,7 @@
 								<th>資産</th>
 								<th>金額</th>
 								<th>メモ</th>
-								<th></th>
+								<th>操作</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -76,7 +77,13 @@
 								<td th:text="${t.asset.assetName}"></td>
 								<td th:text="${t.amount}"></td>
 								<td th:text="${t.memo}"></td>
-								<td><a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}">編集</a></td>
+								<td>
+									<a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}">編集</a>
+									<form th:action="@{/transactions/{id}/delete(id=${t.transactionId})}" method="post"
+										onsubmit="return confirm('この収支を削除しますか？');">
+										<button type="submit">削除</button>
+									</form>
+								</td>
 							</tr>
 						</tbody>
 					</table>
