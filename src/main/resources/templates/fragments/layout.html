@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
 
 <head th:fragment="head(title)">
 	<meta charset="UTF-8">
@@ -30,14 +29,14 @@
 
 	<aside th:fragment="sidebar(active)" class="sidebar">
 		<nav>
-			<a th:href="@{/home}"                   th:classappend="${active == 'home'}      ? 'active'">ホーム</a>
-			<a th:href="@{/transactions/input}"     th:classappend="${active == 'input'}     ? 'active'">収支入力</a>
-			<a th:href="@{/assets}"                 th:classappend="${active == 'assets'}    ? 'active'">口座・資産一覧</a>
-			<a th:href="@{/reports}"                th:classappend="${active == 'reports'}   ? 'active'">分析・レポート</a>
-			<a th:href="@{/transactions/auto}"      th:classappend="${active == 'auto'}      ? 'active'">自動収支一覧</a>
+			<a th:href="@{/home}" th:classappend="${active == 'home'}      ? 'active'">ホーム</a>
+			<a th:href="@{/transactions/input}" th:classappend="${active == 'input'}     ? 'active'">収支入力</a>
+			<a th:href="@{/assets}" th:classappend="${active == 'assets'}    ? 'active'">口座・資産一覧</a>
+			<a th:href="@{/reports}" th:classappend="${active == 'reports'}   ? 'active'">分析・レポート</a>
+			<a th:href="@{/transactions/auto}" th:classappend="${active == 'auto'}      ? 'active'">自動収支一覧</a>
 			<a th:href="@{/transactions/scheduled}" th:classappend="${active == 'scheduled'} ? 'active'">予定収支確認</a>
-			<a th:href="@{/calendar}"               th:classappend="${active == 'calendar'}  ? 'active'">カレンダー</a>
-			<a th:href="@{/settings}"               th:classappend="${active == 'settings'}  ? 'active'">設定</a>
+			<a th:href="@{/calendar}" th:classappend="${active == 'calendar'}  ? 'active'">カレンダー</a>
+			<a th:href="@{/settings}" th:classappend="${active == 'settings'}  ? 'active'">設定</a>
 		</nav>
 	</aside>
 
@@ -46,4 +45,5 @@
 	</footer>
 
 </body>
+
 </html>
