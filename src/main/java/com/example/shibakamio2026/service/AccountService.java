@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.shibakamio2026.dto.AccountForm;
+import com.example.shibakamio2026.dto.SignupForm;
 import com.example.shibakamio2026.entity.User;
 import com.example.shibakamio2026.exception.ResourceNotFoundException;
 import com.example.shibakamio2026.repository.UserRepository;
@@ -73,6 +74,23 @@ public class AccountService {
 		User user = getUser(userId);
 		user.setUserName(form.getUserName().trim());
 		user.setEmail(form.getEmail().trim());
+		userRepository.save(user);
+	}
+
+	// ------------------------------------------------------------
+	// G16 新規アカウント登録
+	// ------------------------------------------------------------
+
+	public boolean isEmailTaken(String email) {
+		return userRepository.existsByEmailIgnoreCase(email.trim());
+	}
+
+	@Transactional
+	public void registerUser(SignupForm form) {
+		User user = new User();
+		user.setUserName(form.getUserName().trim());
+		user.setEmail(form.getEmail().trim());
+		user.setPasswordHash(passwordEncoder.encode(form.getPassword()));
 		userRepository.save(user);
 	}
 
