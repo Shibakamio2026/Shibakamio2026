@@ -19,7 +19,7 @@ WHERE u.email = 'test@example.com'
 
 -- テスト資産
 INSERT INTO assets (user_id, asset_name, asset_type, initial_balance, is_active, created_at, updated_at)
-SELECT u.user_id, '財布', '現金', 10000, true, now(), now()
+SELECT u.user_id, '財布', 'CASH', 10000, true, now(), now()
 FROM users u
 WHERE u.email = 'test@example.com'
   AND NOT EXISTS (
