@@ -14,47 +14,52 @@
 				<div class="list-page-card">
 					<h1>予定収支確認</h1>
 
-					<table th:if="${!scheduledTransactions.isEmpty()}">
-						<thead>
-							<tr>
-								<th>予定日</th>
-								<th>種別</th>
-								<th>カテゴリー</th>
-								<th>資産</th>
-								<th>金額</th>
-								<th>状態</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="s : ${scheduledTransactions}">
-								<td th:text="${s.scheduledDate}"></td>
-								<td th:text="${s.transactionType.name() == 'INCOME'} ? '収入' : '支出'"></td>
-								<td th:text="${s.category.categoryName}"></td>
-								<td th:text="${s.asset.assetName}"></td>
-								<td th:text="${s.amount}"></td>
-								<td th:text="${s.status.name() == 'PLANNED'} ? '予定' : '確認待ち'"></td>
-								<td>
-									<form
-										th:action="@{/transactions/scheduled/{id}/confirm(id=${s.scheduledTransactionId})}"
-										method="post" style="display:inline;">
-										<button type="submit">確定する</button>
-									</form>
-									<form
-										th:action="@{/transactions/scheduled/{id}/cancel(id=${s.scheduledTransactionId})}"
-										method="post" style="display:inline;"
-										onsubmit="return confirm('この予定をキャンセルしますか？');">
-										<button type="submit">キャンセル</button>
-									</form>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div class="data-table-scroll" th:if="${!scheduledTransactions.isEmpty()}">
+						<table class="data-table">
+							<thead>
+								<tr>
+									<th>予定日</th>
+									<th>種別</th>
+									<th>カテゴリー</th>
+									<th>資産</th>
+									<th class="amount">金額</th>
+									<th>状態</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="s : ${scheduledTransactions}">
+									<td th:text="${s.scheduledDate}"></td>
+									<td th:classappend="${s.transactionType.name()} == 'INCOME' ? 'type-income' : 'type-expense'"
+										th:text="${s.transactionType.name() == 'INCOME'} ? '収入' : '支出'"></td>
+									<td th:text="${s.category.categoryName}"></td>
+									<td th:text="${s.asset.assetName}"></td>
+									<td class="amount" th:text="${#numbers.formatInteger(s.amount, 1, 'COMMA')}"></td>
+									<td th:text="${s.status.name() == 'PLANNED'} ? '予定' : '確認待ち'"></td>
+									<td class="actions">
+										<form
+											th:action="@{/transactions/scheduled/{id}/confirm(id=${s.scheduledTransactionId})}"
+											method="post">
+											<button type="submit">確定する</button>
+										</form>
+										<form
+											th:action="@{/transactions/scheduled/{id}/cancel(id=${s.scheduledTransactionId})}"
+											method="post" onsubmit="return confirm('この予定をキャンセルしますか？');">
+											<button type="submit" class="btn-quiet">キャンセル</button>
+										</form>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 
 					<p th:if="${scheduledTransactions.isEmpty()}">確認が必要な予定収支はありません</p>
 
-					<p><a th:href="@{/transactions/auto}">自動収支一覧へ</a></p>
-					<p><a th:href="@{/home}">ホームへ戻る</a></p>
+					<p class="page-nav-links">
+						<a th:href="@{/transactions/auto}">自動収支一覧へ</a>
+						｜
+						<a th:href="@{/home}">ホームへ戻る</a>
+					</p>
 				</div>
 			</div>
 		</div>

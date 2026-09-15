@@ -21,4 +21,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 	List<Transaction> findByAsset_UserAndTransactionDateBetweenOrderByTransactionDateAsc(
 			User user, LocalDate start, LocalDate end);
+
+	// カレンダー表示用。category を fetch join して N+1 を防ぎ、同じ日の中の並び順も transactionId で固定する。
+	@Query("select t from Transaction t "
+			+ "join fetch t.asset a "
+			+ "left join fetch t.category "
+			+ "where a.user = :user "
+			+ "and t.transactionDate between :start and :end "
+			+ "order by t.transactionDate asc, t.transactionId asc")
+	List<Transaction> findForCalendar(@Param("user") User user,
+			@Param("start") LocalDate start,
+			@Param("end") LocalDate end);
 }

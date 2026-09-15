@@ -1,11 +1,11 @@
 package com.example.shibakamio2026.controller;
 
-import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,13 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.shibakamio2026.entity.Transaction;
 import com.example.shibakamio2026.entity.User;
-import com.example.shibakamio2026.enums.TransactionType;
 import com.example.shibakamio2026.repository.TransactionRepository;
 import com.example.shibakamio2026.repository.UserRepository;
 
 @Controller
 @RequestMapping("/calendar")
 public class CalendarController {
+
+	/** 1マスに表示する取引の最大件数。これを超えた分は「他n件」にまとめる */
+	private static final int MAX_ITEMS_PER_DAY = 3;
 
 	private final UserRepository userRepository;
 	private final TransactionRepository transactionRepository;
@@ -54,26 +56,34 @@ public class CalendarController {
 		LocalDate start = targetMonth.atDay(1);
 		LocalDate end = targetMonth.atEndOfMonth();
 
-		List<Transaction> transactions = transactionRepository
-				.findByAsset_UserAndTransactionDateBetweenOrderByTransactionDateAsc(user, start, end);
+		// category を fetch join 済み・日付→ID順で取得
+		List<Transaction> transactions = transactionRepository.findForCalendar(user, start, end);
 
-		Map<LocalDate, List<Transaction>> byDate = transactions.stream()
-				.collect(Collectors.groupingBy(Transaction::getTransactionDate));
+		Map<LocalDate, List<Transaction>> grouped = transactions.stream()
+				.collect(Collectors.groupingBy(
+						Transaction::getTransactionDate,
+						LinkedHashMap::new,
+						Collectors.toList()));
 
-		Map<LocalDate, BigDecimal> netTotal = new HashMap<>();
-		for (Map.Entry<LocalDate, List<Transaction>> entry : byDate.entrySet()) {
-			BigDecimal net = entry.getValue().stream()
-					.map(t -> t.getTransactionType() == TransactionType.INCOME
-							? t.getAmount()
-							: t.getAmount().negate())
-					.reduce(BigDecimal.ZERO, BigDecimal::add);
-			netTotal.put(entry.getKey(), net);
+		// 表示用（先頭 MAX_ITEMS_PER_DAY 件）と、あふれた件数に分ける
+		Map<LocalDate, List<Transaction>> byDate = new HashMap<>();
+		Map<LocalDate, Integer> moreCount = new HashMap<>();
+
+		for (Map.Entry<LocalDate, List<Transaction>> entry : grouped.entrySet()) {
+			List<Transaction> all = entry.getValue();
+			if (all.size() <= MAX_ITEMS_PER_DAY) {
+				byDate.put(entry.getKey(), all);
+			} else {
+				byDate.put(entry.getKey(), new ArrayList<>(all.subList(0, MAX_ITEMS_PER_DAY)));
+				moreCount.put(entry.getKey(), all.size() - MAX_ITEMS_PER_DAY);
+			}
 		}
 
 		model.addAttribute("targetMonth", targetMonth);
 		model.addAttribute("weeks", buildWeeks(targetMonth));
 		model.addAttribute("byDate", byDate);
-		model.addAttribute("netTotal", netTotal);
+		model.addAttribute("moreCount", moreCount);
+		model.addAttribute("today", LocalDate.now());
 		model.addAttribute("prevMonth", targetMonth.minusMonths(1));
 		model.addAttribute("nextMonth", targetMonth.plusMonths(1));
 		return "calendar";

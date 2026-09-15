@@ -20,39 +20,61 @@
 						<a th:href="@{/calendar(year=${nextMonth.year}, month=${nextMonth.monthValue})}">翌月 →</a>
 					</p>
 
-					<table>
+					<p class="calendar-legend">
+						<span class="legend-item is-income">収入</span>
+						<span class="legend-item is-expense">支出</span>
+					</p>
+
+					<table class="calendar-table">
 						<thead>
 							<tr>
-								<th>日</th>
+								<th class="is-sun">日</th>
 								<th>月</th>
 								<th>火</th>
 								<th>水</th>
 								<th>木</th>
 								<th>金</th>
-								<th>土</th>
+								<th class="is-sat">土</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="week : ${weeks}">
-								<td th:each="day : ${week}">
-									<div th:text="${day.dayOfMonth}"
-										th:style="${day.month.value != targetMonth.monthValue} ? 'color:#bbb;' : ''">
-									</div>
+								<td th:each="day, st : ${week}">
 
-									<div th:if="${netTotal.get(day)} != null" th:text="${netTotal.get(day)}"
-										th:style="${netTotal.get(day)} != null and ${netTotal.get(day)} &lt; 0 ? 'color:#e05c5c;' : 'color:#4caf7d;'">
-									</div>
+									<div class="calendar-cell"
+										th:classappend="(${day.monthValue} != ${targetMonth.monthValue} ? ' is-outside' : '')
+										              + (${day.isEqual(today)} ? ' is-today' : '')">
 
-									<div th:each="t : ${byDate.get(day)}">
-										<a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}"
-											th:text="${t.category.categoryName} + ' ' + ${t.amount}"></a>
+										<div class="calendar-date"
+											th:classappend="${st.index} == 0 ? ' is-sun' : (${st.index} == 6 ? ' is-sat' : '')"
+											th:text="${day.dayOfMonth}">
+										</div>
+
+										<div class="calendar-items">
+											<!-- transactionType で色分け（INCOME=緑 / EXPENSE=赤） -->
+											<a th:each="t : ${byDate.get(day)}" class="calendar-item"
+												th:classappend="${t.transactionType.name()} == 'INCOME' ? ' is-income' : ' is-expense'"
+												th:href="@{/transactions/{id}/edit(id=${t.transactionId})}"
+												th:title="${(t.category != null ? t.category.categoryName : '未分類')
+												          + ' ' + #numbers.formatInteger(t.amount, 1, 'COMMA') + '円'}">
+												<span class="item-name"
+													th:text="${t.category != null ? t.category.categoryName : '未分類'}"></span>
+												<span class="item-amount"
+													th:text="${#numbers.formatInteger(t.amount, 1, 'COMMA')}"></span>
+											</a>
+
+											<!-- あふれた分は「他n件」でまとめて、その日の一覧へ -->
+											<a th:if="${moreCount.get(day)} != null" class="calendar-more"
+												th:href="@{/transactions/list(from=${day}, to=${day})}"
+												th:text="'他 ' + ${moreCount.get(day)} + '件 →'"></a>
+										</div>
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 
-					<p><a th:href="@{/home}">ホームへ戻る</a></p>
+					<p class="page-nav-links"><a th:href="@{/home}">ホームへ戻る</a></p>
 				</div>
 			</div>
 		</div>
