@@ -841,33 +841,65 @@ p {
 
 
 /* ==========================
-   ダッシュボードのグラフ
+   ダッシュボードのグラフ（home.html）
    ========================== */
-.tab-panel.is-hidden {
+
+/* ---- タブ切り替え（CSSのみ。JavaScriptは使わない） ---- */
+.chart-tabs input[type="radio"] {
 	display: none;
 }
 
-/* ===== 棒グラフ ===== */
-.bar-chart {
+.tab-buttons label {
+	display: inline-block;
+	/* 共通の label { display:block } を打ち消す */
+	margin: 0;
+	padding: 6px 14px;
+	border-radius: 999px;
+	border: 1px solid #d5e8dc;
+	background: #fafffc;
+	color: var(--color-text-light);
+	font-size: 0.85rem;
+	cursor: pointer;
+	user-select: none;
+}
+
+#tab-assets:checked~.tab-buttons label[for="tab-assets"],
+#tab-monthly:checked~.tab-buttons label[for="tab-monthly"] {
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+	color: #ffffff;
+	font-weight: bold;
+}
+
+.tab-panel {
+	display: none;
+}
+
+#tab-assets:checked~.panel-assets,
+#tab-monthly:checked~.panel-monthly {
+	display: block;
+}
+
+/* ---- 棒グラフ ---- */
+.mini-chart {
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-around;
 	gap: 8px;
-	height: 160px;
-	padding: 8px 4px 0;
+	height: 150px;
+	padding: 8px 0 0;
 	border-bottom: 1px solid #e3f1e9;
 }
 
-.bar-group {
+.mini-group {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	height: 100%;
-	min-width: 0;
 }
 
-.bar-stack {
+.mini-bars {
 	flex: 1;
 	width: 100%;
 	display: flex;
@@ -876,102 +908,126 @@ p {
 	gap: 3px;
 }
 
-.bar {
-	width: 60%;
-	max-width: 28px;
+.mini-bar {
+	width: 14px;
 	min-height: 2px;
-	/* 0円でも存在が分かるように薄く残す */
+	/* 0円でも目盛りとして薄く見えるように */
 	border-radius: 4px 4px 0 0;
-	transition: filter 0.15s ease;
+	transition: height 0.2s ease;
 }
 
-.bar-stack.is-pair .bar {
-	width: 45%;
-}
-
-.bar:hover {
-	filter: brightness(1.1);
-}
-
-.bar-asset {
+.mini-bar.bar-balance {
+	width: 22px;
 	background-color: var(--color-primary);
 }
 
-.bar-income {
+.mini-bar.bar-income {
 	background-color: var(--color-primary);
 }
 
-.bar-expense {
+.mini-bar.bar-expense {
 	background-color: var(--color-error);
 }
 
-.bar-label {
+.mini-label {
 	margin-top: 6px;
 	font-size: 0.75rem;
 	color: var(--color-text-light);
-	white-space: nowrap;
 }
 
-.chart-note,
-.chart-legend {
+.chart-note {
 	margin-top: 10px;
 	font-size: 0.75rem;
 	color: var(--color-text-light);
-	text-align: center;
+	text-align: left;
 }
 
-.legend-dot {
+.chart-more {
+	margin-top: 12px;
+	font-size: 0.8rem;
+	text-align: left;
+}
+
+.chart-legend {
+	display: flex;
+	gap: 16px;
+	margin: 8px 0 0;
+	font-size: 0.75rem;
+	color: var(--color-text-light);
+	text-align: left;
+}
+
+.chart-legend .legend-item::before {
+	content: "";
 	display: inline-block;
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
-	margin: 0 4px 0 10px;
+	margin-right: 5px;
 	vertical-align: middle;
 }
 
-.chart-legend .legend-dot:first-child {
-	margin-left: 0;
+.chart-legend .is-income::before {
+	background-color: var(--color-primary);
 }
 
-/* ===== 円グラフ ===== */
+.chart-legend .is-expense::before {
+	background-color: var(--color-error);
+}
+
+/* ---- 円グラフ（ドーナツ） ---- */
 .pie-wrap {
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: 20px;
 	margin-top: 12px;
 }
 
 .pie {
-	width: 120px;
-	height: 120px;
+	position: relative;
 	flex-shrink: 0;
+	width: 130px;
+	height: 130px;
 	border-radius: 50%;
-	/* 中央をくり抜いてドーナツにする */
-	-webkit-mask: radial-gradient(circle, transparent 46%, #000 47%);
-	mask: radial-gradient(circle, transparent 46%, #000 47%);
+}
+
+.pie::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 62%;
+	height: 62%;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background-color: var(--color-card-bg);
 }
 
 .pie-legend {
+	flex: 1;
+	min-width: 0;
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	flex: 1;
-	min-width: 0;
 }
 
 .pie-legend li {
 	display: flex;
 	align-items: center;
-	gap: 4px;
+	gap: 8px;
+	padding: 4px 0;
 	font-size: 0.8rem;
-	padding: 3px 0;
+	border-bottom: none;
 }
 
-.pie-legend .legend-dot {
-	margin: 0 4px 0 0;
+.pie-dot {
+	flex-shrink: 0;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
 }
 
-.pie-legend .legend-name {
+.pie-name {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
@@ -979,50 +1035,19 @@ p {
 	white-space: nowrap;
 }
 
-.pie-legend .legend-value {
+.pie-value {
+	flex-shrink: 0;
 	color: var(--color-text-light);
-	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 800px) {
 	.pie-wrap {
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: stretch;
 	}
 
-	.pie-legend {
-		width: 100%;
+	.pie {
+		align-self: center;
 	}
-}
-
-/* ==========================
-   ヘッダーのナビは絶対に消さない
-   （他のルールに負けないよう最後に強制指定）
-   ========================== */
-.site-header-nav {
-	display: flex !important;
-	visibility: visible !important;
-	opacity: 1 !important;
-	align-items: center;
-	gap: 16px;
-	flex-shrink: 0;
-}
-
-.site-header-nav>* {
-	display: revert;
-	visibility: visible !important;
-}
-
-.site-header-nav .nav-record,
-.site-header-nav .nav-user {
-	display: inline-block !important;
-}
-
-.site-header-nav .nav-logout-form {
-	display: inline-block !important;
-}
-
-.site-header-nav .nav-logout-form button[type="submit"] {
-	display: inline-block !important;
-	width: auto !important;
 }
