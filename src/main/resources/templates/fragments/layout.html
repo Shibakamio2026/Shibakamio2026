@@ -11,11 +11,9 @@
 <body>
 
 	<!--
-	  この header フラグメントはログインが必要なページだけが使う。
-	  未ログインの login / signup は下の header-auth を使うので、ここで
-	  ログイン判定をして nav ごと消す必要はない（消えると操作できなくなる）。
-	  ユーザー名は GlobalModelAttributes が入れる currentUserName を使い、
-	  sec: 属性には依存しない。
+	  この header フラグメントはログイン必須のページだけが使う。
+	  未ログインの login / signup は下の header-auth を使うので、
+	  ここでログイン判定をして出し分ける必要はない（消えると操作できなくなるため条件を付けない）。
 	-->
 	<header th:fragment="header" class="site-header">
 		<a th:href="@{/home}" class="app-logo">
