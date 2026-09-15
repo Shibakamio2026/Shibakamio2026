@@ -44,45 +44,71 @@ body {
 	padding: calc(var(--header-height) + 32px) 16px calc(var(--footer-height) + 32px);
 }
 
-/* ===== 一覧・カレンダー系ページ用の白カード ===== */
-.list-page-card {
-	background: var(--color-card-bg);
-	border-radius: var(--radius);
-	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-	padding: 32px;
+main {
 	width: 100%;
-	max-width: 950px;
-	margin: 0 auto;
 }
 
-.list-page-card h1 {
-	text-align: center;
-	margin-bottom: 16px;
-}
-
-.list-page-card>p:first-of-type {
-	text-align: center;
-}
-
+/* ==========================
+   白カード共通
+   ========================== */
+.auth-card,
+.import-card,
+.transaction-card,
+.transaction-list-card,
+.list-page-card,
 .calender-card {
 	background: var(--color-card-bg);
 	border-radius: var(--radius);
 	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
 	padding: 32px;
 	width: 100%;
-	max-width: 420px;
 	margin: 0 auto;
 }
 
+/* 幅だけ個別指定 */
+.auth-card,
+.import-card,
+.calender-card {
+	max-width: 420px;
+}
+
+.transaction-card {
+	max-width: 650px;
+}
+
+.transaction-list-card {
+	max-width: 850px;
+}
+
+.list-page-card {
+	max-width: 950px;
+}
+
+.list-page-card h1,
 .calender-card h1 {
 	text-align: center;
 	margin-bottom: 16px;
 }
 
+.list-page-card>p:first-of-type,
 .calender-card>p:first-of-type {
 	text-align: center;
 }
 
+.transaction-card p {
+	text-align: center;
+	margin-top: 16px;
+}
+
+.auth-switch {
+	text-align: center;
+	margin-top: 16px;
+	font-size: 0.9rem;
+}
+
+/* ==========================
+   サイドバー付きレイアウト
+   ========================== */
 .dashboard-page {
 	align-items: stretch;
 	justify-content: flex-start;
@@ -376,80 +402,9 @@ h1 {
 	text-align: center;
 }
 
-/* 白いカード（フォーム） */
-.auth-card {
-	background: var(--color-card-bg);
-	border-radius: var(--radius);
-	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-	padding: 32px;
-	width: 100%;
-	max-width: 420px;
-	margin: 0 auto;
-}
-
-.transaction-card {
-	background: var(--color-card-bg);
-	border-radius: var(--radius);
-	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-	padding: 32px;
-	width: 100%;
-	max-width: 650px;
-	margin: 0 auto;
-}
-
-.transaction-card p {
-	text-align: center;
-	margin-top: 16px;
-}
-
-.transaction-list-card {
-	background: var(--color-card-bg);
-	border-radius: var(--radius);
-	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-	padding: 32px;
-	width: 100%;
-	max-width: 850px;
-	margin: 0 auto;
-}
-
-.auth-switch {
-	text-align: center;
-	margin-top: 16px;
-	font-size: 0.9rem;
-}
-
-.import-card {
-	background: var(--color-card-bg);
-	border-radius: var(--radius);
-	box-shadow: 0 8px 24px rgba(76, 175, 125, 0.15);
-	padding: 32px;
-	width: 100%;
-	max-width: 420px;
-	margin: 0 auto;
-}
-
-/* h1・エラー表示・カード以外のテキストなど、
-   すべての直下要素の横幅をカードと揃える */
-body>*:not(header) {
-	width: 100%;
-	max-width: 420px;
-}
-
-body>.site-footer {
-	max-width: none;
-	width: auto;
-}
-
-body>.list-page-card {
-	width: 100%;
-	max-width: none;
-}
-
-body>main {
-	width: 100%;
-	max-width: none;
-}
-
+/* ==========================
+   テーブル
+   ========================== */
 table {
 	max-width: 100%;
 	width: 100%;
@@ -469,7 +424,9 @@ td {
 	margin-top: 12px;
 }
 
-/* フォーム部品 */
+/* ==========================
+   フォーム部品
+   ========================== */
 form div {
 	margin-bottom: 18px;
 }
@@ -560,9 +517,8 @@ a:hover {
 }
 
 p {
-	margin: 0 0 16px 0;
-	text-align: center;
 	margin: 0;
+	text-align: center;
 }
 
 /* エラーメッセージ */
