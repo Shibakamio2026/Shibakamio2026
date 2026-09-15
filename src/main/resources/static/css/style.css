@@ -552,6 +552,7 @@ p {
 
 /* .auth-card / .import-card と共通の 420px だと狭いのでここで上書き */
 .calender-card {
+	background: var(--color-card-bg);
 	max-width: 920px;
 	padding: 24px;
 }
