@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>口座・資産一覧</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <title>口座・資産一覧 - 家計ログ</title>
 </head>
 <body>
-<div class="wide-card">
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="dashboard-page">
+<div class="dashboard-layout">
+<aside th:replace="~{fragments/layout :: sidebar('assets')}"></aside>
+<div class="page-content">
+<div class="list-page-card">
 <h1>口座・資産一覧</h1>
 
 <p class="success-message" th:if="${successMessage}" th:text="${successMessage}"></p>
@@ -43,7 +50,7 @@
         <td th:text="${asset.expectedBalance}"></td>
         <td th:text="${asset.active} ? '有効' : '無効'"></td>
         <td>
-            <div class="row-actions">
+            <div class="km-actions">
                 <a th:if="${asset.active}" th:href="@{/assets/{id}/edit(id=${asset.assetId})}">編集</a>
                 <form th:if="${asset.active}" th:action="@{/assets/{id}/deactivate(id=${asset.assetId})}"
                       method="post"
@@ -57,5 +64,10 @@
 </table>
 
 </div>
+</div>
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>

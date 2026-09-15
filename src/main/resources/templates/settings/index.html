@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
 <head>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
     <meta charset="UTF-8">
-    <title>設定</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" th:href="@{/css/error-message.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <title>設定 - 家計ログ</title>
 </head>
 <body>
-<div class="wide-card">
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="dashboard-page">
+<div class="dashboard-layout">
+<aside th:replace="~{fragments/layout :: sidebar('settings')}"></aside>
+<div class="page-content">
+<div class="list-page-card">
 <h1>設定</h1>
 
 <ul>
@@ -19,5 +26,10 @@
 <p><a th:href="@{/home}">ホームへ戻る</a></p>
 
 </div>
+</div>
+</div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 </html>
