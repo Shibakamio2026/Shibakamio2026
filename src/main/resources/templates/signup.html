@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" th:href="@{/css/style.css}">
-	<title>新規アカウント登録 - 家計ログ</title>
-</head>
+<head th:replace="~{fragments/layout :: head('新規アカウント登録')}"></head>
 
 <body>
-	<header class="site-header">
-		<span class="app-logo">家計ログ</span>
-	</header>
+	<header th:replace="~{fragments/layout :: header-auth}"></header>
+
 	<main>
 		<div class="auth-card">
 			<h1>新規アカウント登録</h1>
@@ -46,9 +40,7 @@
 		</div>
 	</main>
 
-	<footer class="site-footer">
-		<p>&copy; 2026 Kakei Log</p>
-	</footer>
+	<footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
 
 </html>
