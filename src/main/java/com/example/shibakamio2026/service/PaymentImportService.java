@@ -105,6 +105,10 @@ public class PaymentImportService {
 		Asset sourceAsset = assetRepository.findById(row.getSourceAssetId())
 				.orElseThrow(() -> new IllegalArgumentException("振替元資産を選択してください"));
 
+		if (sourceAsset.getAssetId().equals(chargeToAsset.getAssetId())) {
+			throw new IllegalArgumentException("振替元と振替先に同じ資産は指定できません");
+		}
+
 		Transfer transfer = new Transfer();
 		transfer.setFromAsset(sourceAsset);
 		transfer.setToAsset(chargeToAsset);

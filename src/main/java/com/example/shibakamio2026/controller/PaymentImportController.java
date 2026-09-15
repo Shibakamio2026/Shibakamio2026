@@ -83,6 +83,7 @@ public class PaymentImportController {
 			model.addAttribute("csvImportBatch", batch);
 			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
 			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
+			model.addAttribute("chargeToAssetId", assetId);
 			return "payments/import-preview";
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", "CSVの読み込みに失敗しました: " + e.getMessage());
@@ -124,24 +125,45 @@ public class PaymentImportController {
 						: (r.getCategoryId() == null || r.getTargetAssetId() == null)));
 
 		if (missingSelection) {
-			CsvImportBatch batchForRedisplay = new CsvImportBatch();
-			batchForRedisplay.setRows(originalRows);
+			return redisplayPreview(originalRows, user, assetId, model,
+					"カテゴリー・登録先資産・振替元資産が未選択の行があります。すべて選択してください。");
+		}
 
-			model.addAttribute("errorMessage", "カテゴリー・登録先資産・振替元資産が未選択の行があります。すべて選択してください。");
-			model.addAttribute("csvImportBatch", batchForRedisplay);
-			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
-			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
-			return "payments/import-preview";
+		// チャージ行の振替元が、取込先の資産と同じになっていないか
+		boolean sameAsset = originalRows.stream().anyMatch(r -> r.isChecked()
+				&& "CHARGE".equals(r.getCandidateType())
+				&& assetId.equals(r.getSourceAssetId()));
+
+		if (sameAsset) {
+			return redisplayPreview(originalRows, user, assetId, model,
+					"チャージ行の振替元には、取込先とは別の資産を選択してください。");
 		}
 
 		Asset chargeToAsset = assetRepository.findById(assetId)
 				.orElseThrow(() -> new IllegalArgumentException("資産が見つかりません"));
 
-		paymentImportService.importRows(originalRows, user, chargeToAsset);
+		try {
+			paymentImportService.importRows(originalRows, user, chargeToAsset);
+		} catch (IllegalArgumentException e) {
+			return redisplayPreview(originalRows, user, assetId, model, e.getMessage());
+		}
 
 		session.removeAttribute(SESSION_ROWS);
 		session.removeAttribute(SESSION_ASSET_ID);
 
 		return "redirect:/transactions/list";
+	}
+
+	private String redisplayPreview(List<CsvImportRow> rows, User user, Long chargeToAssetId,
+			Model model, String errorMessage) {
+		CsvImportBatch batchForRedisplay = new CsvImportBatch();
+		batchForRedisplay.setRows(rows);
+
+		model.addAttribute("errorMessage", errorMessage);
+		model.addAttribute("csvImportBatch", batchForRedisplay);
+		model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
+		model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
+		model.addAttribute("chargeToAssetId", chargeToAssetId);
+		return "payments/import-preview";
 	}
 }

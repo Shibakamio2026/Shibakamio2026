@@ -63,7 +63,9 @@
 										<select th:if="${row.candidateType == 'CHARGE'}"
 											th:field="*{rows[__${rowStat.index}__].sourceAssetId}">
 											<option value="">振替元資産を選択</option>
-											<option th:each="a : ${assets}" th:value="${a.assetId}"
+											<option th:each="a : ${assets}"
+												th:if="${a.assetId != chargeToAssetId}"
+												th:value="${a.assetId}"
 												th:text="${a.assetName}">
 											</option>
 										</select>
