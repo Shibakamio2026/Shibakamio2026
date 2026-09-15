@@ -26,7 +26,8 @@
 									<th>取引内容</th>
 									<th>取引先</th>
 									<th>種別</th>
-									<th>カテゴリー／振替元資産</th>
+									<th>カテゴリー</th>
+									<th>登録先資産／振替元資産</th>
 									<th>取り込む</th>
 								</tr>
 							</thead>
@@ -48,6 +49,15 @@
 											<option value="">選択してください</option>
 											<option th:each="c : ${categories}" th:value="${c.categoryId}"
 												th:text="${c.categoryName}">
+											</option>
+										</select>
+									</td>
+									<td>
+										<select th:if="${row.candidateType != 'CHARGE'}"
+											th:field="*{rows[__${rowStat.index}__].targetAssetId}">
+											<option value="">登録先資産を選択</option>
+											<option th:each="a : ${assets}" th:value="${a.assetId}"
+												th:text="${a.assetName}">
 											</option>
 										</select>
 										<select th:if="${row.candidateType == 'CHARGE'}"

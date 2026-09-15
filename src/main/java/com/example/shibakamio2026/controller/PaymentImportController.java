@@ -73,7 +73,7 @@ public class PaymentImportController {
 		}
 
 		try {
-			List<CsvImportRow> rows = paymentImportService.buildPreview(file, user);
+			List<CsvImportRow> rows = paymentImportService.buildPreview(file, user, assetId);
 			session.setAttribute(SESSION_ROWS, rows);
 			session.setAttribute(SESSION_ASSET_ID, assetId);
 
@@ -107,34 +107,37 @@ public class PaymentImportController {
 			return "redirect:/payments/import";
 		}
 
-		// 画面で編集された checked / categoryId / sourceAssetId をマージ
+		// 画面で編集された checked / categoryId / targetAssetId / sourceAssetId をマージ
 		List<CsvImportRow> editedRows = csvImportBatch.getRows();
 		for (int i = 0; i < originalRows.size() && i < editedRows.size(); i++) {
 			CsvImportRow original = originalRows.get(i);
 			CsvImportRow edited = editedRows.get(i);
 			original.setChecked(edited.isChecked());
 			original.setCategoryId(edited.getCategoryId());
+			original.setTargetAssetId(edited.getTargetAssetId());
 			original.setSourceAssetId(edited.getSourceAssetId());
 		}
 
 		boolean missingSelection = originalRows.stream().anyMatch(r -> r.isChecked() &&
-				("CHARGE".equals(r.getCandidateType()) ? r.getSourceAssetId() == null : r.getCategoryId() == null));
+				("CHARGE".equals(r.getCandidateType())
+						? r.getSourceAssetId() == null
+						: (r.getCategoryId() == null || r.getTargetAssetId() == null)));
 
 		if (missingSelection) {
 			CsvImportBatch batchForRedisplay = new CsvImportBatch();
 			batchForRedisplay.setRows(originalRows);
 
-			model.addAttribute("errorMessage", "カテゴリーまたは振替元資産が未選択の行があります。すべて選択してください。");
+			model.addAttribute("errorMessage", "カテゴリー・登録先資産・振替元資産が未選択の行があります。すべて選択してください。");
 			model.addAttribute("csvImportBatch", batchForRedisplay);
 			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
 			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "payments/import-preview";
 		}
 
-		Asset targetAsset = assetRepository.findById(assetId)
+		Asset chargeToAsset = assetRepository.findById(assetId)
 				.orElseThrow(() -> new IllegalArgumentException("資産が見つかりません"));
 
-		paymentImportService.importRows(originalRows, user, targetAsset);
+		paymentImportService.importRows(originalRows, user, chargeToAsset);
 
 		session.removeAttribute(SESSION_ROWS);
 		session.removeAttribute(SESSION_ASSET_ID);

@@ -59,11 +59,29 @@ public class Transaction {
 	@Column(name = "amount", nullable = false, precision = 10, scale = 0)
 	private BigDecimal amount;
 
-	@Column(name = "external_transaction_no")
-	private String externalTransactionNo;
+	/** CSV「取引内容」（例：支払い／チャージ／送金受け取り） */
+	@Column(name = "transaction_content")
+	private String transactionContent;
 
-	@Column(name = "source_content")
-	private String sourceContent;
+	/** CSV「取引先」 */
+	@Column(name = "business_partner")
+	private String businessPartner;
+
+	/** CSV「取引方法」（例：PayPay残高／PayPayカード） */
+	@Column(name = "transaction_method")
+	private String transactionMethod;
+
+	/** CSV「支払い区分」（例：ー回払い） */
+	@Column(name = "payment_type")
+	private String paymentType;
+
+	/** CSV「利用者」 */
+	@Column(name = "user_name")
+	private String userName;
+
+	/** CSV「取引番号」（重複判定に使用） */
+	@Column(name = "transaction_number")
+	private String transactionNumber;
 
 	@Column(name = "memo")
 	private String memo;

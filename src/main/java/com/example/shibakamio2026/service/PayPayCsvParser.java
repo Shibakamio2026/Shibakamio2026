@@ -16,11 +16,16 @@ import org.springframework.stereotype.Component;
 import com.example.shibakamio2026.dto.CsvImportRow;
 import com.example.shibakamio2026.exception.InvalidCsvFormatException;
 
+/**
+ * PayPay明細CSVのパーサー。
+ * 列構成（要件定義書どおり）：
+ * 0:取引日 1:出金金額 2:入金金額 3:取引内容 4:取引先 5:取引方法 6:支払い区分 7:利用者 8:取引番号
+ */
 @Component
 public class PayPayCsvParser {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-	private static final int MIN_COLUMNS = 6;
+	private static final int MIN_COLUMNS = 9;
 
 	public List<CsvImportRow> parse(InputStream inputStream) throws IOException {
 		List<CsvImportRow> rows = new ArrayList<>();
@@ -54,9 +59,12 @@ public class PayPayCsvParser {
 				}
 				row.setWithdrawalAmount(parseAmount(cols[1]));
 				row.setDepositAmount(parseAmount(cols[2]));
-				row.setContent(cols[4].trim());
-				row.setBusinessPartner(cols[5].trim());
-				row.setTransactionNumber(cols.length > 9 ? cols[9].trim() : "");
+				row.setContent(cols[3].trim());
+				row.setBusinessPartner(cols[4].trim());
+				row.setTransactionMethod(cols[5].trim());
+				row.setPaymentType(cols[6].trim());
+				row.setUserName(cols[7].trim());
+				row.setTransactionNumber(cols[8].trim());
 
 				if (row.getContent().contains("チャージ")) {
 					row.setCandidateType("CHARGE");
