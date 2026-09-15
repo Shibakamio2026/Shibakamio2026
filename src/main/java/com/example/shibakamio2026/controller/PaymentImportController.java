@@ -121,8 +121,11 @@ public class PaymentImportController {
 				("CHARGE".equals(r.getCandidateType()) ? r.getSourceAssetId() == null : r.getCategoryId() == null));
 
 		if (missingSelection) {
+			CsvImportBatch batchForRedisplay = new CsvImportBatch();
+			batchForRedisplay.setRows(originalRows);
+
 			model.addAttribute("errorMessage", "カテゴリーまたは振替元資産が未選択の行があります。すべて選択してください。");
-			model.addAttribute("csvImportBatch", csvImportBatch);
+			model.addAttribute("csvImportBatch", batchForRedisplay);
 			model.addAttribute("categories", categoryRepository.findByUserAndIsActiveTrueOrderByCategoryIdAsc(user));
 			model.addAttribute("assets", assetRepository.findByUserAndIsActiveTrueOrderByAssetIdAsc(user));
 			return "payments/import-preview";
