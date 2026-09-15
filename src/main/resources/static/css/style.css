@@ -147,6 +147,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	align-items: stretch;
 }
 
 .dashboard-main h1 {
