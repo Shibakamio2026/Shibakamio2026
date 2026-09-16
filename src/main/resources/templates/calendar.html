@@ -20,67 +20,131 @@
 						<a th:href="@{/calendar(year=${nextMonth.year}, month=${nextMonth.monthValue})}">翌月 →</a>
 					</p>
 
-					<p class="calendar-legend">
-						<span class="legend-item is-income">収入</span>
-						<span class="legend-item is-expense">支出</span>
+					<!-- 収入/支出の色を、カテゴリー名ではなく transactionType で判定する凡例 -->
+					<p style="text-align:center; font-size:0.8rem; color:#6b7d73;">
+						<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#2f9e5b;margin-right:4px;"></span>収入
+						<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d9534f;margin:0 4px 0 14px;"></span>支出
 					</p>
 
 					<table class="calendar-table">
 						<thead>
 							<tr>
-								<th class="is-sun">日</th>
+								<th>日</th>
 								<th>月</th>
 								<th>火</th>
 								<th>水</th>
 								<th>木</th>
 								<th>金</th>
-								<th class="is-sat">土</th>
+								<th>土</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="week : ${weeks}">
-								<td th:each="day, st : ${week}">
+								<td th:each="day : ${week}" class="calendar-cell">
+									<div class="calendar-date"
+										th:text="${day.dayOfMonth}"
+										th:style="${day.month.value != targetMonth.monthValue} ? 'color:#bbb;' : ''">
+									</div>
 
-									<div class="calendar-cell"
-										th:classappend="(${day.monthValue} != ${targetMonth.monthValue} ? ' is-outside' : '')
-										              + (${day.isEqual(today)} ? ' is-today' : '')">
-
-										<div class="calendar-date"
-											th:classappend="${st.index} == 0 ? ' is-sun' : (${st.index} == 6 ? ' is-sat' : '')"
-											th:text="${day.dayOfMonth}">
-										</div>
-
-										<div class="calendar-items">
-											<!-- transactionType で色分け（INCOME=緑 / EXPENSE=赤） -->
-											<a th:each="t : ${byDate.get(day)}" class="calendar-item"
-												th:classappend="${t.transactionType.name()} == 'INCOME' ? ' is-income' : ' is-expense'"
-												th:href="@{/transactions/{id}/edit(id=${t.transactionId})}"
-												th:title="${(t.category != null ? t.category.categoryName : '未分類')
-												          + ' ' + #numbers.formatInteger(t.amount, 1, 'COMMA') + '円'}">
-												<span class="item-name"
-													th:text="${t.category != null ? t.category.categoryName : '未分類'}"></span>
-												<span class="item-amount"
-													th:text="${#numbers.formatInteger(t.amount, 1, 'COMMA')}"></span>
-											</a>
-
-											<!-- あふれた分は「他n件」でまとめて、その日の一覧へ -->
-											<a th:if="${moreCount.get(day)} != null" class="calendar-more"
-												th:href="@{/transactions/list(from=${day}, to=${day})}"
-												th:text="'他 ' + ${moreCount.get(day)} + '件 →'"></a>
-										</div>
+									<!-- カテゴリー名ではなく transactionType（INCOME/EXPENSE）で色分けする -->
+									<!-- 1マスにつき最大3件まで表示し、残りは「他n件」にまとめる -->
+									<div th:each="t, iter : ${byDate.get(day)}" class="calendar-entry"
+										th:if="${iter.index} &lt; 3"
+										th:classappend="${t.transactionType.name() == 'EXPENSE'} ? 'calendar-entry-expense' : 'calendar-entry-income'">
+										<a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}" class="calendar-entry-row">
+											<span class="calendar-entry-category" th:text="${t.category.categoryName}"></span>
+											<span class="calendar-entry-amount" th:text="'¥' + ${t.amount}"></span>
+										</a>
+									</div>
+									<div class="calendar-entry-more"
+										th:if="${byDate.get(day) != null and #lists.size(byDate.get(day)) > 3}">
+										<a th:href="@{/transactions/list(from=${day}, to=${day})}"
+											th:text="'他 ' + (${#lists.size(byDate.get(day))} - 3) + '件 →'"></a>
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 
-					<p class="page-nav-links"><a th:href="@{/home}">ホームへ戻る</a></p>
+					<p><a th:href="@{/home}">ホームへ戻る</a></p>
 				</div>
 			</div>
 		</div>
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<style>
+		/* カレンダーのマス目に区切り線をつけ、見やすくする */
+		.calendar-table {
+			width: 100%;
+			border-collapse: collapse;
+			table-layout: fixed;
+		}
+
+		.calendar-table th,
+		.calendar-table td {
+			border: 1px solid #e3f0e8;
+		}
+
+		.calendar-table th {
+			background: #f2fbf6;
+			padding: 8px 4px;
+			font-size: 0.85rem;
+		}
+
+		.calendar-cell {
+			vertical-align: top;
+			height: 100px;
+			padding: 4px 6px;
+		}
+
+		.calendar-date {
+			font-size: 0.8rem;
+			color: #6b7d73;
+			margin-bottom: 2px;
+		}
+
+		/* 合計額（従来の netTotal 表示）は撤去し、個別の取引だけを表示する */
+		.calendar-entry {
+			font-size: 0.68rem;
+			line-height: 1.25;
+		}
+
+		/* カテゴリー名を上、金額（¥表示）を下に、それぞれフルの横幅で表示する */
+		.calendar-entry-row {
+			display: flex;
+			flex-direction: column;
+			text-decoration: none;
+		}
+
+		.calendar-entry-category {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.calendar-entry-amount {
+			font-weight: bold;
+		}
+
+		.calendar-entry-income a {
+			color: #2f9e5b;
+		}
+
+		.calendar-entry-expense a {
+			color: #d9534f;
+		}
+
+		.calendar-entry-more {
+			font-size: 0.68rem;
+			margin-top: 2px;
+		}
+
+		.calendar-entry-more a {
+			color: #6b7d73;
+		}
+	</style>
 </body>
 
 </html>

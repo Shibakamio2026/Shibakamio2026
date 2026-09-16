@@ -39,97 +39,32 @@
 				</section>
 
 				<section class="main-columns">
-
-					<!-- 資産推移 / 月刊収支（タブ切り替えはCSSのみ。JSなし） -->
-					<div class="chart-card chart-tabs">
-						<input type="radio" name="dashboardChartTab" id="tab-assets" checked>
-						<input type="radio" name="dashboardChartTab" id="tab-monthly">
-
+					<div class="chart-card">
 						<div class="tab-buttons">
-							<label for="tab-assets">資産推移</label>
-							<label for="tab-monthly">月刊収支</label>
+							<button type="button" id="tabAssetTrend" class="active" onclick="showAssetTrend()">資産推移</button>
+							<button type="button" id="tabMonthly" onclick="showMonthly()">月刊収支</button>
 						</div>
 
-						<!-- 資産推移：各月末時点の総資産額 -->
-						<div class="tab-panel panel-assets">
-							<div th:if="${hasAssetData}">
-								<div class="mini-chart">
-									<div class="mini-group" th:each="p : ${monthPoints}">
-										<div class="mini-bars">
-											<div class="mini-bar bar-balance"
-												th:style="'height:' + ${p.balancePercent} + '%'"
-												th:title="${p.label} + '末 ¥' + ${#numbers.formatInteger(p.endBalance, 0, 'COMMA')}">
-											</div>
-										</div>
-										<div class="mini-label" th:text="${p.label}"></div>
-									</div>
-								</div>
-								<p class="chart-note">
-									各月末時点の総資産額（直近<span th:text="${chartMonths}"></span>か月）
-								</p>
-							</div>
-							<p class="placeholder-note" th:unless="${hasAssetData}">
-								資産が登録されていません。<a th:href="@{/assets}">資産を登録する →</a>
-							</p>
-						</div>
+						<p class="placeholder-note" th:if="${!hasAnyTransaction}">
+							直近6か月の取引がありません。<a th:href="@{/transactions/input}">収支を記録する →</a>
+						</p>
 
-						<!-- 月刊収支：確定済みの収入・支出 -->
-						<div class="tab-panel panel-monthly">
-							<div th:if="${hasMonthlyData}">
-								<p class="chart-legend">
-									<span class="legend-item is-income">収入</span>
-									<span class="legend-item is-expense">支出</span>
-								</p>
-								<div class="mini-chart">
-									<div class="mini-group" th:each="p : ${monthPoints}">
-										<div class="mini-bars">
-											<div class="mini-bar bar-income"
-												th:style="'height:' + ${p.incomePercent} + '%'"
-												th:title="${p.label} + ' 収入 ¥' + ${#numbers.formatInteger(p.income, 0, 'COMMA')}">
-											</div>
-											<div class="mini-bar bar-expense"
-												th:style="'height:' + ${p.expensePercent} + '%'"
-												th:title="${p.label} + ' 支出 ¥' + ${#numbers.formatInteger(p.expense, 0, 'COMMA')}">
-											</div>
-										</div>
-										<div class="mini-label" th:text="${p.label}"></div>
-									</div>
-								</div>
-								<p class="chart-note">
-									確定済みの収入・支出（直近<span th:text="${chartMonths}"></span>か月）
-								</p>
-							</div>
-							<p class="placeholder-note" th:unless="${hasMonthlyData}">
-								直近<span th:text="${chartMonths}"></span>か月の取引がありません。
-								<a th:href="@{/transactions/input}">収支を記録する →</a>
-							</p>
+						<div th:unless="${!hasAnyTransaction}" style="position:relative; height:220px;">
+							<canvas id="assetTrendChart"></canvas>
+							<canvas id="monthlyChart" style="display:none;"></canvas>
 						</div>
-
-						<p class="chart-more"><a th:href="@{/reports}">分析・レポートで詳しく見る →</a></p>
 					</div>
 
-					<!-- 今月の支出内訳 -->
 					<div class="chart-card">
-						<h3>今月の支出内訳</h3>
+						<h3>今月の支出内訳（円グラフ）</h3>
 
-						<div class="pie-wrap" th:unless="${expenseSlices.isEmpty()}">
-							<div class="pie"
-								th:style="'background: conic-gradient(' + ${expensePieGradient} + ');'"></div>
-							<ul class="pie-legend">
-								<li th:each="s : ${expenseSlices}">
-									<span class="pie-dot" th:style="'background-color:' + ${s.color} + ';'"></span>
-									<span class="pie-name" th:text="${s.name}"></span>
-									<span class="pie-value"
-										th:text="'¥' + ${#numbers.formatInteger(s.amount, 0, 'COMMA')}
-										        + '（' + ${#numbers.formatDecimal(s.percent, 1, 1)} + '%）'"></span>
-								</li>
-							</ul>
-						</div>
-
-						<p class="placeholder-note" th:if="${expenseSlices.isEmpty()}">
-							今月の支出がまだありません。
-							<a th:href="@{/transactions/input}">収支を記録する →</a>
+						<p class="placeholder-note" th:if="${!hasCategoryData}">
+							今月の支出がまだありません。<a th:href="@{/transactions/input}">収支を記録する →</a>
 						</p>
+
+						<div th:unless="${!hasCategoryData}" style="position:relative; height:220px;">
+							<canvas id="categoryPieChart"></canvas>
+						</div>
 					</div>
 				</section>
 
@@ -175,6 +110,139 @@
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<!-- グラフ描画用：Chart.js（CDNから読み込み） -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+	<!-- 円グラフに直接パーセンテージを表示するためのプラグイン -->
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const monthlyLabels = /*[[${monthlyLabels}]]*/ [];
+		const monthlyBalances = /*[[${monthlyBalances}]]*/ [];
+		const monthlyIncomeSeries = /*[[${monthlyIncomeSeries}]]*/ [];
+		const monthlyExpenseSeries = /*[[${monthlyExpenseSeries}]]*/ [];
+		const categoryNames = /*[[${categoryNames}]]*/ [];
+		const categoryAmounts = /*[[${categoryAmounts}]]*/ [];
+		/*]]>*/
+
+		const COLOR_PRIMARY = '#4caf7d';
+		const COLOR_PRIMARY_DARK = '#3d9468';
+		const COLOR_EXPENSE = '#d9534f';
+		const PIE_COLORS = ['#4caf7d', '#ffa94d', '#4a90d9', '#d9534f', '#9b7fd4', '#e0c341', '#5bc0de'];
+
+		let assetTrendChart = null;
+		let monthlyChart = null;
+		let categoryPieChart = null;
+
+		// ----- 資産推移（折れ線グラフ） -----
+		const assetTrendCanvas = document.getElementById('assetTrendChart');
+		if (assetTrendCanvas && monthlyLabels.length > 0) {
+			assetTrendChart = new Chart(assetTrendCanvas, {
+				type: 'line',
+				data: {
+					labels: monthlyLabels,
+					datasets: [{
+						label: '総資産額',
+						data: monthlyBalances,
+						borderColor: COLOR_PRIMARY_DARK,
+						backgroundColor: 'rgba(76, 175, 125, 0.15)',
+						tension: 0.25,
+						fill: true,
+						pointRadius: 3
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: { legend: { display: false } },
+					scales: {
+						y: { ticks: { callback: v => '¥' + v.toLocaleString() } }
+					}
+				}
+			});
+		}
+
+		// ----- 月刊収支（棒グラフ：収入/支出） -----
+		const monthlyCanvas = document.getElementById('monthlyChart');
+		if (monthlyCanvas && monthlyLabels.length > 0) {
+			monthlyChart = new Chart(monthlyCanvas, {
+				type: 'bar',
+				data: {
+					labels: monthlyLabels,
+					datasets: [
+						{ label: '収入', data: monthlyIncomeSeries, backgroundColor: COLOR_PRIMARY },
+						{ label: '支出', data: monthlyExpenseSeries, backgroundColor: COLOR_EXPENSE }
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						y: { ticks: { callback: v => '¥' + v.toLocaleString() } }
+					}
+				}
+			});
+		}
+
+		// ----- 今月の支出内訳（円グラフ） -----
+		const categoryCanvas = document.getElementById('categoryPieChart');
+		if (categoryCanvas && categoryNames.length > 0) {
+			categoryPieChart = new Chart(categoryCanvas, {
+				type: 'pie',
+				plugins: [ChartDataLabels],
+				data: {
+					labels: categoryNames,
+					datasets: [{
+						data: categoryAmounts,
+						backgroundColor: PIE_COLORS
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { position: 'bottom' },
+						tooltip: {
+							callbacks: {
+								label: ctx => {
+									const total = categoryAmounts.reduce((a, b) => a + b, 0);
+									const pct = total > 0 ? Math.round((ctx.parsed / total) * 100) : 0;
+									return ctx.label + '：¥' + ctx.parsed.toLocaleString() + '（' + pct + '%）';
+								}
+							}
+						},
+						datalabels: {
+							color: '#ffffff',
+							font: { weight: 'bold', size: 13 },
+							formatter: (value) => {
+								const total = categoryAmounts.reduce((a, b) => a + b, 0);
+								const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+								// 区画が小さいとラベルが重なって読めなくなるため、5%未満は表示しない
+								// （小さいカテゴリーの正確な割合は、グラフにマウスを乗せると確認できる）
+								return pct < 5 ? '' : pct + '%';
+							}
+						}
+					}
+				}
+			});
+		}
+
+		// ----- タブ切り替え（資産推移 / 月刊収支） -----
+		function showAssetTrend() {
+			document.getElementById('tabAssetTrend').classList.add('active');
+			document.getElementById('tabMonthly').classList.remove('active');
+			if (assetTrendCanvas) assetTrendCanvas.style.display = 'block';
+			if (monthlyCanvas) monthlyCanvas.style.display = 'none';
+		}
+
+		function showMonthly() {
+			document.getElementById('tabMonthly').classList.add('active');
+			document.getElementById('tabAssetTrend').classList.remove('active');
+			if (assetTrendCanvas) assetTrendCanvas.style.display = 'none';
+			if (monthlyCanvas) monthlyCanvas.style.display = 'block';
+		}
+	</script>
 </body>
 
 </html>
