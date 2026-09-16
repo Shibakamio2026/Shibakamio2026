@@ -14,7 +14,7 @@
 				<div class="list-page-card">
 					<h1>自動収支一覧</h1>
 
-					<table th:if="${!autoTransactions.isEmpty()}">
+					<table th:if="${!autoTransactions.isEmpty()}" class="bordered-table">
 						<thead>
 							<tr>
 								<th>種別</th>
@@ -25,7 +25,7 @@
 								<th>開始日</th>
 								<th>終了日</th>
 								<th>状態</th>
-								<th></th>
+								<th>操作</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -40,7 +40,7 @@
 								<td th:text="${a.startDate}"></td>
 								<td th:text="${a.endDate} ?: '無期限'"></td>
 								<td th:text="${a.enabled} ? '有効' : '無効'"></td>
-								<td>
+								<td class="action-cell">
 									<form th:if="${a.enabled}"
 										th:action="@{/transactions/auto/{id}/disable(id=${a.autoTransactionId})}"
 										method="post" onsubmit="return confirm('この自動収支を停止しますか？未確定の予定もキャンセルされます。');">
@@ -61,6 +61,56 @@
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<style>
+		/* 表に区切り線をつけて、列・行の境目を分かりやすくする */
+		.bordered-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.bordered-table th,
+		.bordered-table td {
+			border: 1px solid #e3f0e8;
+			padding: 10px 8px;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.bordered-table th {
+			background: #f2fbf6;
+		}
+
+		/* 操作列は、ボタンより少し広めの最小幅を確保する */
+		.bordered-table th:last-child,
+		.bordered-table td:last-child {
+			min-width: 140px;
+			width: 140px;
+		}
+
+		/* 「停止する」ボタンを、セルの中で縦横中央に配置する（セルからはみ出さないようにする） */
+		.action-cell {
+			text-align: center;
+			overflow: hidden;
+		}
+
+		.action-cell form {
+			margin: 0;
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		.action-cell button[type="submit"] {
+			width: auto;
+			max-width: 100%;
+			min-width: 0;
+			padding: 6px 14px;
+			margin: 0;
+			box-sizing: border-box;
+		}
+	</style>
 </body>
 
 </html>

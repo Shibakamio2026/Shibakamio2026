@@ -14,7 +14,7 @@
 				<div class="list-page-card">
 					<h1>予定収支確認</h1>
 
-					<table th:if="${!scheduledTransactions.isEmpty()}">
+					<table th:if="${!scheduledTransactions.isEmpty()}" class="bordered-table">
 						<thead>
 							<tr>
 								<th>予定日</th>
@@ -23,7 +23,7 @@
 								<th>資産</th>
 								<th>金額</th>
 								<th>状態</th>
-								<th></th>
+								<th>操作</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -34,17 +34,17 @@
 								<td th:text="${s.asset.assetName}"></td>
 								<td th:text="${s.amount}"></td>
 								<td th:text="${s.status.name() == 'PLANNED'} ? '予定' : '確認待ち'"></td>
-								<td>
+								<td class="action-cell">
 									<form
 										th:action="@{/transactions/scheduled/{id}/confirm(id=${s.scheduledTransactionId})}"
-										method="post" style="display:inline;">
+										method="post">
 										<button type="submit">確定する</button>
 									</form>
 									<form
 										th:action="@{/transactions/scheduled/{id}/cancel(id=${s.scheduledTransactionId})}"
-										method="post" style="display:inline;"
+										method="post"
 										onsubmit="return confirm('この予定をキャンセルしますか？');">
-										<button type="submit">キャンセル</button>
+										<button type="submit" class="btn-cancel">キャンセル</button>
 									</form>
 								</td>
 							</tr>
@@ -61,6 +61,65 @@
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<style>
+		/* 表に区切り線をつけて、列・行の境目を分かりやすくする */
+		.bordered-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.bordered-table th,
+		.bordered-table td {
+			border: 1px solid #e3f0e8;
+			padding: 10px 8px;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.bordered-table th {
+			background: #f2fbf6;
+		}
+
+		/* 操作列は、ボタン2つ分＋「キャンセル」が折り返さない幅を確保する */
+		.bordered-table th:last-child,
+		.bordered-table td:last-child {
+			min-width: 220px;
+			width: 220px;
+		}
+
+		/* 「確定する」「キャンセル」ボタンを、セルの中で横に並べて中央配置する */
+		.action-cell {
+			text-align: center;
+			overflow: hidden;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.action-cell form {
+			margin: 0;
+			display: inline-flex;
+		}
+
+		.action-cell button[type="submit"] {
+			width: auto;
+			white-space: nowrap;
+			padding: 6px 14px;
+			margin: 0;
+		}
+
+		.btn-cancel {
+			background-color: transparent;
+			color: #d9534f;
+			border: 1px solid #d9534f;
+		}
+
+		.btn-cancel:hover {
+			background-color: #fbebea;
+		}
+	</style>
 </body>
 
 </html>

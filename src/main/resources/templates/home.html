@@ -41,14 +41,30 @@
 				<section class="main-columns">
 					<div class="chart-card">
 						<div class="tab-buttons">
-							<button type="button" class="active">資産推移</button>
-							<button type="button">月刊収支</button>
+							<button type="button" id="tabAssetTrend" class="active" onclick="showAssetTrend()">資産推移</button>
+							<button type="button" id="tabMonthly" onclick="showMonthly()">月刊収支</button>
 						</div>
-						<p class="placeholder-note">グラフは「分析・レポート」画面で今後表示されます</p>
+
+						<p class="placeholder-note" th:if="${!hasAnyTransaction}">
+							直近6か月の取引がありません。<a th:href="@{/transactions/input}">収支を記録する →</a>
+						</p>
+
+						<div th:unless="${!hasAnyTransaction}" style="position:relative; height:220px;">
+							<canvas id="assetTrendChart"></canvas>
+							<canvas id="monthlyChart" style="display:none;"></canvas>
+						</div>
 					</div>
+
 					<div class="chart-card">
 						<h3>今月の支出内訳（円グラフ）</h3>
-						<p class="placeholder-note">グラフは「分析・レポート」画面で今後表示されます</p>
+
+						<p class="placeholder-note" th:if="${!hasCategoryData}">
+							今月の支出がまだありません。<a th:href="@{/transactions/input}">収支を記録する →</a>
+						</p>
+
+						<div th:unless="${!hasCategoryData}" style="position:relative; height:220px;">
+							<canvas id="categoryPieChart"></canvas>
+						</div>
 					</div>
 				</section>
 
@@ -94,6 +110,139 @@
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<!-- グラフ描画用：Chart.js（CDNから読み込み） -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+	<!-- 円グラフに直接パーセンテージを表示するためのプラグイン -->
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const monthlyLabels = /*[[${monthlyLabels}]]*/ [];
+		const monthlyBalances = /*[[${monthlyBalances}]]*/ [];
+		const monthlyIncomeSeries = /*[[${monthlyIncomeSeries}]]*/ [];
+		const monthlyExpenseSeries = /*[[${monthlyExpenseSeries}]]*/ [];
+		const categoryNames = /*[[${categoryNames}]]*/ [];
+		const categoryAmounts = /*[[${categoryAmounts}]]*/ [];
+		/*]]>*/
+
+		const COLOR_PRIMARY = '#4caf7d';
+		const COLOR_PRIMARY_DARK = '#3d9468';
+		const COLOR_EXPENSE = '#d9534f';
+		const PIE_COLORS = ['#4caf7d', '#ffa94d', '#4a90d9', '#d9534f', '#9b7fd4', '#e0c341', '#5bc0de'];
+
+		let assetTrendChart = null;
+		let monthlyChart = null;
+		let categoryPieChart = null;
+
+		// ----- 資産推移（折れ線グラフ） -----
+		const assetTrendCanvas = document.getElementById('assetTrendChart');
+		if (assetTrendCanvas && monthlyLabels.length > 0) {
+			assetTrendChart = new Chart(assetTrendCanvas, {
+				type: 'line',
+				data: {
+					labels: monthlyLabels,
+					datasets: [{
+						label: '総資産額',
+						data: monthlyBalances,
+						borderColor: COLOR_PRIMARY_DARK,
+						backgroundColor: 'rgba(76, 175, 125, 0.15)',
+						tension: 0.25,
+						fill: true,
+						pointRadius: 3
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: { legend: { display: false } },
+					scales: {
+						y: { ticks: { callback: v => '¥' + v.toLocaleString() } }
+					}
+				}
+			});
+		}
+
+		// ----- 月刊収支（棒グラフ：収入/支出） -----
+		const monthlyCanvas = document.getElementById('monthlyChart');
+		if (monthlyCanvas && monthlyLabels.length > 0) {
+			monthlyChart = new Chart(monthlyCanvas, {
+				type: 'bar',
+				data: {
+					labels: monthlyLabels,
+					datasets: [
+						{ label: '収入', data: monthlyIncomeSeries, backgroundColor: COLOR_PRIMARY },
+						{ label: '支出', data: monthlyExpenseSeries, backgroundColor: COLOR_EXPENSE }
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						y: { ticks: { callback: v => '¥' + v.toLocaleString() } }
+					}
+				}
+			});
+		}
+
+		// ----- 今月の支出内訳（円グラフ） -----
+		const categoryCanvas = document.getElementById('categoryPieChart');
+		if (categoryCanvas && categoryNames.length > 0) {
+			categoryPieChart = new Chart(categoryCanvas, {
+				type: 'pie',
+				plugins: [ChartDataLabels],
+				data: {
+					labels: categoryNames,
+					datasets: [{
+						data: categoryAmounts,
+						backgroundColor: PIE_COLORS
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: { position: 'bottom' },
+						tooltip: {
+							callbacks: {
+								label: ctx => {
+									const total = categoryAmounts.reduce((a, b) => a + b, 0);
+									const pct = total > 0 ? Math.round((ctx.parsed / total) * 100) : 0;
+									return ctx.label + '：¥' + ctx.parsed.toLocaleString() + '（' + pct + '%）';
+								}
+							}
+						},
+						datalabels: {
+							color: '#ffffff',
+							font: { weight: 'bold', size: 13 },
+							formatter: (value) => {
+								const total = categoryAmounts.reduce((a, b) => a + b, 0);
+								const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+								// 区画が小さいとラベルが重なって読めなくなるため、5%未満は表示しない
+								// （小さいカテゴリーの正確な割合は、グラフにマウスを乗せると確認できる）
+								return pct < 5 ? '' : pct + '%';
+							}
+						}
+					}
+				}
+			});
+		}
+
+		// ----- タブ切り替え（資産推移 / 月刊収支） -----
+		function showAssetTrend() {
+			document.getElementById('tabAssetTrend').classList.add('active');
+			document.getElementById('tabMonthly').classList.remove('active');
+			if (assetTrendCanvas) assetTrendCanvas.style.display = 'block';
+			if (monthlyCanvas) monthlyCanvas.style.display = 'none';
+		}
+
+		function showMonthly() {
+			document.getElementById('tabMonthly').classList.add('active');
+			document.getElementById('tabAssetTrend').classList.remove('active');
+			if (assetTrendCanvas) assetTrendCanvas.style.display = 'none';
+			if (monthlyCanvas) monthlyCanvas.style.display = 'block';
+		}
+	</script>
 </body>
 
 </html>
