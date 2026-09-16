@@ -23,10 +23,6 @@
 		</nav>
 	</header>
 
-	<header th:fragment="header-auth" class="site-header">
-		<span class="app-logo">家計ログ</span>
-	</header>
-
 	<aside th:fragment="sidebar(active)" class="sidebar">
 		<nav>
 			<a th:href="@{/home}" th:classappend="${active == 'home'}      ? 'active'">ホーム</a>
