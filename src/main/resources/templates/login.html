@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
-<head th:replace="~{fragments/layout :: head('ログイン')}"></head>
+<head th:replace="~{fragments/layout :: head('ログイン')}">
+	<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 
 <body>
-	<header th:replace="~{fragments/layout :: header-auth}"></header>
+	<header th:fragment="header-auth" class="site-header">
+		<span class="app-logo">家計ログ</span>
+	</header>
 
 	<main>
 		<div class="auth-card">
