@@ -17,7 +17,7 @@
 					<h1>取込結果</h1>
 
 					<form th:action="@{/payments/import/confirm}" th:object="${csvImportBatch}" method="post">
-						<table>
+						<table class="bordered-table">
 							<thead>
 								<tr>
 									<th>取引日</th>
@@ -63,10 +63,8 @@
 										<select th:if="${row.candidateType == 'CHARGE'}"
 											th:field="*{rows[__${rowStat.index}__].sourceAssetId}">
 											<option value="">振替元資産を選択</option>
-											<option th:each="a : ${assets}"
-												th:if="${a.assetId != chargeToAssetId}"
-												th:value="${a.assetId}"
-												th:text="${a.assetName}">
+											<option th:each="a : ${assets}" th:if="${a.assetId != chargeToAssetId}"
+												th:value="${a.assetId}" th:text="${a.assetName}">
 											</option>
 										</select>
 									</td>
@@ -87,6 +85,26 @@
 	</main>
 
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+	<style>
+		/* 表に区切り線をつけて、列・行の境目を分かりやすくする */
+		.bordered-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.bordered-table th,
+		.bordered-table td {
+			border: 1px solid #e3f0e8;
+			padding: 8px 6px;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.bordered-table th {
+			background: #f2fbf6;
+		}
+	</style>
 </body>
 
 </html>
