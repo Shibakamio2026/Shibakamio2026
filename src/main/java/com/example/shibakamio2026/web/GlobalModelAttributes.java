@@ -29,7 +29,7 @@ public class GlobalModelAttributes {
 		this.userRepository = userRepository;
 	}
 
-	/** ログイン中の表示名。取得できない場合は空文字（ヘッダー自体は常に表示する）。 */
+	// ログイン中の表示名。取得できない場合は空文字（ヘッダー自体は常に表示する）。
 	@ModelAttribute("currentUserName")
 	public String currentUserName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
