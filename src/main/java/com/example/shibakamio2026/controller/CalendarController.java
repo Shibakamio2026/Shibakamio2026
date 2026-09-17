@@ -27,7 +27,7 @@ import com.example.shibakamio2026.repository.UserRepository;
 public class CalendarController {
 
 	/** 1マスに表示する取引の最大件数。これを超えた分は「他n件」にまとめる */
-	private static final int MAX_ITEMS_PER_DAY = 3;
+	private static final int MAX_ITEMS_PER_DAY = 2;
 
 	private final UserRepository userRepository;
 	private final TransactionRepository transactionRepository;
