@@ -20,7 +20,6 @@
 						<a th:href="@{/calendar(year=${nextMonth.year}, month=${nextMonth.monthValue})}">翌月 →</a>
 					</p>
 
-					<!-- 収入/支出の色を、カテゴリー名ではなく transactionType で判定する凡例 -->
 					<p style="text-align:center; font-size:0.8rem; color:#6b7d73;">
 						<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#2f9e5b;margin-right:4px;"></span>収入
 						<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#d9534f;margin:0 4px 0 14px;"></span>支出
@@ -46,20 +45,19 @@
 										th:style="${day.month.value != targetMonth.monthValue} ? 'color:#bbb;' : ''">
 									</div>
 
-									<!-- カテゴリー名ではなく transactionType（INCOME/EXPENSE）で色分けする -->
-									<!-- 1マスにつき最大3件まで表示し、残りは「他n件」にまとめる -->
-									<div th:each="t, iter : ${byDate.get(day)}" class="calendar-entry"
-										th:if="${iter.index} &lt; 3"
+									<!-- 取引（Java側で、すでに MAX_ITEMS_PER_DAY 件に、絞り込み済み） -->
+									<div th:each="t : ${byDate.get(day)}" class="calendar-entry"
 										th:classappend="${t.transactionType.name() == 'EXPENSE'} ? 'calendar-entry-expense' : 'calendar-entry-income'">
 										<a th:href="@{/transactions/{id}/edit(id=${t.transactionId})}" class="calendar-entry-row">
 											<span class="calendar-entry-category" th:text="${t.category.categoryName}"></span>
 											<span class="calendar-entry-amount" th:text="'¥' + ${t.amount}"></span>
 										</a>
 									</div>
-									<div class="calendar-entry-more"
-										th:if="${byDate.get(day) != null and #lists.size(byDate.get(day)) > 3}">
+
+									<!-- あふれた件数（Java側の moreCount をそのまま使う） -->
+									<div class="calendar-entry-more" th:if="${moreCount.get(day)} != null">
 										<a th:href="@{/transactions/list(from=${day}, to=${day})}"
-											th:text="'他 ' + (${#lists.size(byDate.get(day))} - 3) + '件 →'"></a>
+											th:text="'他 ' + ${moreCount.get(day)} + '件 →'"></a>
 									</div>
 								</td>
 							</tr>
@@ -75,7 +73,6 @@
 	<footer th:replace="~{fragments/layout :: footer}"></footer>
 
 	<style>
-		/* カレンダーのマス目に区切り線をつけ、見やすくする */
 		.calendar-table {
 			width: 100%;
 			border-collapse: collapse;
@@ -105,13 +102,11 @@
 			margin-bottom: 2px;
 		}
 
-		/* 合計額（従来の netTotal 表示）は撤去し、個別の取引だけを表示する */
 		.calendar-entry {
 			font-size: 0.68rem;
 			line-height: 1.25;
 		}
 
-		/* カテゴリー名を上、金額（¥表示）を下に、それぞれフルの横幅で表示する */
 		.calendar-entry-row {
 			display: flex;
 			flex-direction: column;
