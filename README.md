@@ -585,7 +585,3 @@ src/main/resources/
 | `scheduled_transactions` | ルールから作られた 1 回ごとの予定 | 「予定」「確定」「キャンセル」の状態を 1 回ずつ持たせるため |
 
 ---
-
-## 作者
-
-芝川雄也（[@Shibakamio2026](https://github.com/Shibakamio2026)）
