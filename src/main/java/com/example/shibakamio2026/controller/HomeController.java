@@ -32,6 +32,9 @@ public class HomeController {
 	/** ダッシュボードのグラフに表示する月数（資産推移・月刊収支とも共通） */
 	private static final int GRAPH_MONTHS = 6;
 
+	/** 円グラフに個別表示するカテゴリー数。これを超えた分は「その他」にまとめる */
+	private static final int PIE_MAX_SLICES = 5;
+
 	private final UserRepository userRepository;
 	private final AssetRepository assetRepository;
 	private final TransactionRepository transactionRepository;
@@ -97,7 +100,7 @@ public class HomeController {
 		BigDecimal projectedBalance = totalAssetBalance.add(scheduledNet);
 
 		// ------------------------------------------------------------
-		// ここから：ダッシュボードのグラフ用データ（新規追加）
+		// ここから：ダッシュボードのグラフ用データ
 		// ------------------------------------------------------------
 
 		BigDecimal initialTotal = assets.stream()
@@ -158,8 +161,30 @@ public class HomeController {
 			}
 		}
 
-		List<String> categoryNames = new ArrayList<>(categoryTotals.keySet());
-		List<BigDecimal> categoryAmounts = new ArrayList<>(categoryTotals.values());
+		// 金額の多い順に並べ替え、上位 PIE_MAX_SLICES 件だけ個別に残し、
+		// 残りは「その他」として1つにまとめる（カテゴリーが増えても、色が被らないようにするため）
+		List<Map.Entry<String, BigDecimal>> sortedCategories = categoryTotals.entrySet().stream()
+				.sorted(Map.Entry.<String, BigDecimal> comparingByValue().reversed())
+				.collect(Collectors.toList());
+
+		List<String> categoryNames = new ArrayList<>();
+		List<BigDecimal> categoryAmounts = new ArrayList<>();
+		BigDecimal otherTotal = BigDecimal.ZERO;
+
+		for (int i = 0; i < sortedCategories.size(); i++) {
+			Map.Entry<String, BigDecimal> entry = sortedCategories.get(i);
+			if (i < PIE_MAX_SLICES) {
+				categoryNames.add(entry.getKey());
+				categoryAmounts.add(entry.getValue());
+			} else {
+				otherTotal = otherTotal.add(entry.getValue());
+			}
+		}
+
+		if (otherTotal.signum() > 0) {
+			categoryNames.add("その他");
+			categoryAmounts.add(otherTotal);
+		}
 
 		// ------------------------------------------------------------
 		// ここまで：ダッシュボードのグラフ用データ
@@ -175,7 +200,7 @@ public class HomeController {
 		model.addAttribute("scheduledCount", plannedThisMonth.size());
 		model.addAttribute("scheduledNet", scheduledNet);
 
-		// グラフ用（新規）
+		// グラフ用
 		model.addAttribute("monthlyLabels", monthlyLabels);
 		model.addAttribute("monthlyBalances", monthlyBalances);
 		model.addAttribute("monthlyIncomeSeries", monthlyIncomeSeries);
